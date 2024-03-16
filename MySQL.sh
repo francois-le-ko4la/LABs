@@ -5,7 +5,7 @@
 # and a dump script.
 #
 # usage:
-#  sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/blob/master/MySQL.sh | sudo sh
+#  sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/master/MySQL.sh | sudo sh
 #
 # After running the script, you'll have:
 # - A MySQL database named "employees"
