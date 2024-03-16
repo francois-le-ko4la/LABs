@@ -25,7 +25,7 @@ MYSQL_RUBRIK_USER="rubrik_svc"
 MYSQL_RUBRIK_PASS="Rubrik@123!"
 
 echo "$(date --iso-8601=seconds) - MySQL: install MySQL package"
-apt install git wget mysql-server -y
+apt install git wget nfs-common mysql-server -y
 
 echo "$(date --iso-8601=seconds) - MySQL: enable/start service"
 systemctl enable mysql.service
