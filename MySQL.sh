@@ -4,6 +4,9 @@
 # This script sets up a demo MySQL database with a service account
 # and a dump script.
 #
+# usage:
+#  sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/blob/master/MySQL.sh | sudo sh
+#
 # After running the script, you'll have:
 # - A MySQL database named "employees"
 # - A backup account rubrik_svc/Rubrik@123!
@@ -29,7 +32,7 @@ systemctl enable mysql.service
 systemctl start mysql.service
 
 echo "$(date --iso-8601=seconds) - MySQL: download test database"
-#git clone https://github.com/datacharmer/test_db.git
+git clone https://github.com/datacharmer/test_db.git
 
 echo "$(date --iso-8601=seconds) - MySQL: import test database"
 cd test_db
