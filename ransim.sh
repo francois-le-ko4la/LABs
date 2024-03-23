@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # goal:
-# This script sets up a demo to demonstrate Rubrik Anomaly Detection
+# This script sets up a demo to demonstrate Rubrik Anomaly Detection/Threat Hunting
 #
 # usage:
 #  sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/master/ransim.sh | sudo sh
