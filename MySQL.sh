@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# DISCLAIMER:
+# goal:
 # This script sets up a demo MySQL database with a service account
 # and a dump script.
 #
@@ -12,6 +12,7 @@
 # - A backup account rubrik_svc/Rubrik@123!
 # - An example dump script
 #
+# DISCLAIMER:
 # This script should not be used in a production environment without
 # appropriate evaluation and additional modifications.
 # The author of this script cannot be held responsible for any
