@@ -58,6 +58,7 @@ mkdir -p $RBK_PATH
 log "Create python venv..."
 python3 -m venv $RBK_PATH/venv > /dev/null 2>&1
 log "Install cryptography lib..."
+$RBK_PATH/venv/bin/python -m pip install --upgrade pip > /dev/null 2>&1
 $RBK_PATH/venv/bin/python -m pip install cryptography$DOWN_CRYPTO > /dev/null 2>&1
 log "Download crypto script..."
 wget -q -O $RBK_PATH/encrypt_file.py $URL/encrypt_file.py > /dev/null 2>&1
