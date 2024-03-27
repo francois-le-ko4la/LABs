@@ -9,7 +9,7 @@
 
 RBK_PATH="/opt/rubrik/scripts"
 URL="https://raw.githubusercontent.com/francois-le-ko4la/LABs/master"
-INST_PYTHON=""
+INST_PYTHON=0
 
 # Logging function
 log() {
@@ -22,14 +22,14 @@ if [ "$(uname)" = "Linux" ]; then
         . /etc/os-release
         if { [ "$ID" = "ubuntu" ] && [ "${VERSION_ID%.*}" -ge 20 ]; } || \
            { [ "$ID" = "debian" ] && [ "$VERSION_ID" -ge 11 ]; }; then
-            log "Debian/Ubuntu detected. Installing python3-full..."
-            INST_PYTHON="apt-get -yq install python3-full"
+            log "Debian/Ubuntu detected."
+            INST_PYTHON=1
         elif { [ "$ID" = "centos" ] && [ "$VERSION_ID" -ge 9 ]; } || \
              { [ "$ID" = "rhel" ] && [ "$VERSION_ID" -ge 8 ]; }; then
-            log "RHEL 8 or newer detected. Installing python3..."
-            INST_PYTHON="yum install -y python3"
+            log "CENTOS/RHEL detected."
+            INST_PYTHON=2
         else
-            log "Unsupported CENTOS/RHEL version. Exiting..."
+            log "Unsupported platform. Exiting..."
             exit 1
         fi
     else
@@ -42,7 +42,12 @@ else
 fi
 
 log "Install python3-full..."
-$INST_PYTHON
+if [ "$(INST_PYTHON)" -eq 1 ]; then
+    apt-get -yq install python3-full > /dev/null 2>&1
+elif [ "$(INST_PYTHON)" -eq 2 ]; then
+    yum install -y python3 > /dev/null 2>&1
+fi
+
 log "Create scripts repository..."
 mkdir -p $RBK_PATH
 log "Create python venv..."
