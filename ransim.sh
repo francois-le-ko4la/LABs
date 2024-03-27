@@ -23,7 +23,7 @@ if [ "$(uname)" = "Linux" ]; then
         if { [ "$ID" = "ubuntu" ] && [ "${VERSION_ID%.*}" -ge 20 ]; } || \
            { [ "$ID" = "debian" ] && [ "$VERSION_ID" -ge 11 ]; }; then
             log "Debian/Ubuntu detected. Installing python3-full..."
-            INST_PYTHON="DEBIAN_FRONTEND=noninteractive && apt-get -yq install python3-full < /dev/null > /dev/null"
+            INST_PYTHON="export DEBIAN_FRONTEND=noninteractive && apt-get -yq install python3-full < /dev/null > /dev/null && export DEBIAN_FRONTEND=dialog"
         elif { [ "$ID" = "centos" ] && [ "$VERSION_ID" -ge 9 ]; } || \
              { [ "$ID" = "rhel" ] && [ "$VERSION_ID" -ge 8 ]; }; then
             log "RHEL 8 or newer detected. Installing python3..."
