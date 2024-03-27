@@ -10,6 +10,7 @@
 RBK_PATH="/opt/rubrik/scripts"
 URL="https://raw.githubusercontent.com/francois-le-ko4la/LABs/master"
 INST_PYTHON=0
+DOWN_CRYPTO=""
 
 # Logging function
 log() {
@@ -28,6 +29,10 @@ if [ "$(uname)" = "Linux" ]; then
              { [ "$ID" = "rhel" ] && [ "$VERSION_ID" -ge 8 ]; }; then
             log "CENTOS/RHEL detected."
             INST_PYTHON=2
+        elif { [ "$ID" = "centos" ] && [ "$VERSION_ID" -ge 7 ]; } then
+            log "CENTOS detected. Downgrade cryptography."
+            INST_PYTHON=2
+            DOWN_CRYPTO="==36.0.2"
         else
             log "Unsupported platform. Exiting..."
             exit 1
@@ -53,7 +58,7 @@ mkdir -p $RBK_PATH
 log "Create python venv..."
 python3 -m venv $RBK_PATH/venv > /dev/null 2>&1
 log "Install cryptography lib..."
-$RBK_PATH/venv/bin/python -m pip install cryptography > /dev/null 2>&1
+$RBK_PATH/venv/bin/python -m pip install cryptography$DOWN_CRYPTO > /dev/null 2>&1
 log "Download crypto script..."
 wget -q -O $RBK_PATH/encrypt_file.py $URL/encrypt_file.py > /dev/null 2>&1
 wget -q -O $RBK_PATH/key $URL/key > /dev/null 2>&1
