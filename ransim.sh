@@ -42,9 +42,9 @@ else
 fi
 
 log "Install python3-full..."
-if [ "$(INST_PYTHON)" -eq 1 ]; then
+if [ "$INST_PYTHON" -eq 1 ]; then
     apt-get -yq install python3-full > /dev/null 2>&1
-elif [ "$(INST_PYTHON)" -eq 2 ]; then
+elif [ "$INST_PYTHON" -eq 2 ]; then
     yum install -y python3 > /dev/null 2>&1
 fi
 
