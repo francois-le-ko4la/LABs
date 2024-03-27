@@ -23,11 +23,11 @@ if [ "$(uname)" = "Linux" ]; then
         if { [ "$ID" = "ubuntu" ] && [ "${VERSION_ID%.*}" -ge 20 ]; } || \
            { [ "$ID" = "debian" ] && [ "$VERSION_ID" -ge 11 ]; }; then
             log "Debian/Ubuntu detected. Installing python3-full..."
-            INST_PYTHON="apt-get -yq install python3-full < /dev/null > /dev/null"
+            INST_PYTHON="apt-get -yq install python3-full"
         elif { [ "$ID" = "centos" ] && [ "$VERSION_ID" -ge 9 ]; } || \
              { [ "$ID" = "rhel" ] && [ "$VERSION_ID" -ge 8 ]; }; then
             log "RHEL 8 or newer detected. Installing python3..."
-            INST_PYTHON="yum install -y python3 2>&1 /dev/null"
+            INST_PYTHON="yum install -y python3"
         else
             log "Unsupported CENTOS/RHEL version. Exiting..."
             exit 1
