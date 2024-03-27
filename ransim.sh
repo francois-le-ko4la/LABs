@@ -19,7 +19,7 @@ python3 -m venv $RBK_PATH/venv &> /dev/null
 echo "Install cryptography lib..."
 $RBK_PATH/venv/bin/python -m pip install cryptography &> /dev/null
 echo "Download crypto script..."
-wget -O $RBK_PATH/encrypt_file.py $URL/encrypt_file.py &> /dev/null
-wget -O $RBK_PATH/key $URL/key &> /dev/null
+wget -q -O $RBK_PATH/encrypt_file.py $URL/encrypt_file.py &> /dev/null
+wget -q -O $RBK_PATH/key $URL/key &> /dev/null
 chmod 754 $RBK_PATH/encrypt_file.py &> /dev/null
 echo "Operation completed successfully."
