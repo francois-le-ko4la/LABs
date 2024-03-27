@@ -10,7 +10,7 @@
 RBK_PATH="/opt/rubrik/scripts"
 URL="https://raw.githubusercontent.com/francois-le-ko4la/LABs/master"
 
-apt install python3-full
+apt install python3-full -y
 mkdir -p $RBK_PATH
 python3 -m venv $RBK_PATH/venv
 $RBK_PATH/venv/bin/python -m pip install cryptography
