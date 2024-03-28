@@ -1,5 +1,9 @@
 #!/opt/rubrik/scripts/venv/bin/python3
 # -*- coding: utf-8 -*-
+#
+# DESCRIPTION:
+# This script sets up a demo to demonstrate Rubrik Anomaly Detection/Threat Hunting.
+#
 # DISCLAIMER:
 # This script is developed for demonstration purposes only and should be used
 # with caution. Always ensure the security of your data and use appropriate
@@ -18,11 +22,13 @@
 # arising out of the use of or inability to use the sample scripts or documentation,
 # even if the author has been advised of the possibility of such damages.
 #
-# setup:
+# SETUP:
 #   $ python3 -m venv /opt/rubrik/scripts/venv
 #   $ /opt/rubrik/scripts/venv/bin/python -m pip install cryptography
+#   or
+#   sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/master/ransim.sh | sudo sh
 #
-# Example:
+# EXAMPLE:
 #   $ ./encrypt_file.py --delete-original encrypt key file/
 #   $ ./encrypt_file.py --delete-original decrypt key file/
 
