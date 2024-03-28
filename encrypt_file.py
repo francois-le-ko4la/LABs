@@ -22,6 +22,10 @@
 # arising out of the use of or inability to use the sample scripts or documentation,
 # even if the author has been advised of the possibility of such damages.
 #
+# REQUIREMENTS:
+# - Linux platform: Debian 7+, Ubuntu 20/04+, RHEL 8+ or CentOS 9+
+# - python 3.6+
+#
 # SETUP:
 #   $ python3 -m venv /opt/rubrik/scripts/venv
 #   $ /opt/rubrik/scripts/venv/bin/python -m pip install cryptography
@@ -31,6 +35,7 @@
 # EXAMPLE:
 #   $ ./encrypt_file.py --delete-original encrypt key file/
 #   $ ./encrypt_file.py --delete-original decrypt key file/
+#
 
 import os
 import argparse
