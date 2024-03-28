@@ -1,10 +1,7 @@
 #!/bin/sh
 #
-# goal:
-# This script sets up a demo to demonstrate Rubrik Anomaly Detection/Threat Hunting
-#
-# usage:
-#  sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/master/ransim.sh | sudo sh
+# DESCRIPTION:
+# This script sets up a demo to demonstrate Rubrik Anomaly Detection/Threat Hunting.
 #
 # DISCLAIMER:
 # This script is developed for demonstration purposes only and should be used
@@ -24,13 +21,17 @@
 # arising out of the use of or inability to use the sample scripts or documentation,
 # even if the author has been advised of the possibility of such damages.
 #
-# Linux supported:
+# REQUIREMENT:
+# - python 3.6
 # - Ubuntu 20/04+
 # - Debian 7+
 # - CentOS 9+
 # - RHEL 8+
 #
-# Crontab :
+# USAGE:
+#  sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/master/ransim.sh | sudo sh
+#
+# CRONTAB EXAMPLE:
 # 0 4 * * * /opt/rubrik/scripts/encrypt_file.py --delete-original encrypt /opt/rubrik/scripts/key /path/to/files
 # 0 8 * * * /opt/rubrik/scripts/encrypt_file.py --delete-original decrypt /opt/rubrik/scripts/key /path/to/files
 # 0 12 * * * /opt/rubrik/scripts/encrypt_file.py --delete-original encrypt /opt/rubrik/scripts/key /path/to/files
@@ -38,7 +39,7 @@
 # 0 20 * * * /opt/rubrik/scripts/encrypt_file.py --delete-original encrypt /opt/rubrik/scripts/key /path/to/files
 # 59 23 * * * /opt/rubrik/scripts/encrypt_file.py --delete-original decrypt /opt/rubrik/scripts/key /path/to/files
 #
-# YARA Rule :
+# YARA RULE EXAMPLE:
 # import "hash"
 #
 # rule StringMatch : Crypto {
