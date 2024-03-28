@@ -12,6 +12,14 @@
 # - CentOS 9+
 # - RHEL 8+
 #
+# Crontab :
+# 0 4 * * * /opt/rubrik/scripts/encrypt_file.py --delete-original encrypt /opt/rubrik/scripts/key /path/to/files
+# 0 8 * * * /opt/rubrik/scripts/encrypt_file.py --delete-original decrypt /opt/rubrik/scripts/key /path/to/files
+# 0 12 * * * /opt/rubrik/scripts/encrypt_file.py --delete-original encrypt /opt/rubrik/scripts/key /path/to/files
+# 0 16 * * * /opt/rubrik/scripts/encrypt_file.py --delete-original decrypt /opt/rubrik/scripts/key /path/to/files
+# 0 20 * * * /opt/rubrik/scripts/encrypt_file.py --delete-original encrypt /opt/rubrik/scripts/key /path/to/files
+# 59 23 * * * /opt/rubrik/scripts/encrypt_file.py --delete-original decrypt /opt/rubrik/scripts/key /path/to/files
+#
 # YARA Rule :
 # import "hash"
 #
@@ -23,7 +31,7 @@
 #  condition:
 #    $crypto_lib and
 #    filesize < 20KB
-#}
+# }
 #
 
 RBK_PATH="/opt/rubrik/scripts"
