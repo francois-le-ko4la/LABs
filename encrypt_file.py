@@ -36,6 +36,27 @@
 #   $ ./encrypt_file.py --delete-original encrypt key file/
 #   $ ./encrypt_file.py --delete-original decrypt key file/
 #
+# CRONTAB EXAMPLE:
+# 0 4 * * * /opt/rubrik/scripts/encrypt_file.py --delete-original encrypt /opt/rubrik/scripts/key /path/to/files
+# 0 8 * * * /opt/rubrik/scripts/encrypt_file.py --delete-original decrypt /opt/rubrik/scripts/key /path/to/files
+# 0 12 * * * /opt/rubrik/scripts/encrypt_file.py --delete-original encrypt /opt/rubrik/scripts/key /path/to/files
+# 0 16 * * * /opt/rubrik/scripts/encrypt_file.py --delete-original decrypt /opt/rubrik/scripts/key /path/to/files
+# 0 20 * * * /opt/rubrik/scripts/encrypt_file.py --delete-original encrypt /opt/rubrik/scripts/key /path/to/files
+# 59 23 * * * /opt/rubrik/scripts/encrypt_file.py --delete-original decrypt /opt/rubrik/scripts/key /path/to/files
+#
+# YARA RULE EXAMPLE:
+# import "hash"
+#
+# rule StringMatch : Crypto {
+#  meta:
+#    description = "cryptography library"
+#  strings:
+#    $crypto_lib = "from cryptography"
+#  condition:
+#    $crypto_lib and
+#    filesize < 20KB
+# }
+#
 
 import os
 import argparse
