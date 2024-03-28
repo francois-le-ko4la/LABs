@@ -7,6 +7,9 @@
 # usage:
 #  sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/master/MySQL.sh | sudo sh
 #
+# linux tested:
+# - ubuntu 20.04+
+#
 # After running the script, you'll have:
 # - A MySQL database named "employees"
 # - A backup account rubrik_svc/Rubrik@123!
