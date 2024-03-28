@@ -21,12 +21,9 @@
 # arising out of the use of or inability to use the sample scripts or documentation,
 # even if the author has been advised of the possibility of such damages.
 #
-# REQUIREMENT:
-# - python 3.6
-# - Ubuntu 20/04+
-# - Debian 7+
-# - CentOS 9+
-# - RHEL 8+
+# REQUIREMENTS:
+# - Linux platform: Debian 7+, Ubuntu 20/04+, RHEL 8+ or CentOS 9+
+# - python 3.6+
 #
 # USAGE:
 #  sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/master/ransim.sh | sudo sh
