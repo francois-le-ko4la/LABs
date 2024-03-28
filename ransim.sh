@@ -6,6 +6,25 @@
 # usage:
 #  sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/master/ransim.sh | sudo sh
 #
+# Linux supported:
+# - Ubuntu 20/04+
+# - Debian 7+
+# - CentOS 9+
+# - RHEL 8+
+#
+# YARA Rule :
+# import "hash"
+#
+# rule StringMatch : Crypto {
+#  meta:
+#    description = "cryptography library"
+#  strings:
+#    $crypto_lib = "from cryptography"
+#  condition:
+#    $crypto_lib and
+#    filesize < 20KB
+#}
+#
 
 RBK_PATH="/opt/rubrik/scripts"
 URL="https://raw.githubusercontent.com/francois-le-ko4la/LABs/master"
