@@ -53,6 +53,11 @@ else
     exit 1
 fi
 
+if dpkg -l | grep -q mariadb-server; then
+    log "MariaDB is installed. Exiting."
+    exit 1
+fi
+
 log "Install MySQL package..."
 apt install -y git wget nfs-common mysql-server > /dev/null 2>&1 || { log "Failed to install MySQL package. Exiting."; exit 1; }
 
