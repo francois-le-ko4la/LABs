@@ -1,6 +1,6 @@
 #!/bin/sh
-
-# Objective:
+#
+# DESCRIPTION:
 # Create multiple "lorem ipsum file" to encrypt.
 #
 # DISCLAIMER:
