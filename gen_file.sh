@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Objective:
 # Create multiple "lorem ipsum file" to encrypt.
@@ -28,9 +28,20 @@
 # sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/gen_file.sh | sudo sh
 #
 
-DEST="/home/shares"
+# Logging function
+log() {
+    echo "$(date --iso-8601=seconds) - GEN_FILE - $1"
+}
 
-wget https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/lorem.txt
-mkdir -p $DEST
-for i in {1..4096}; do cp lorem.txt $DEST/lorem$i.txt; done
- 
+DEST="/home/shares"
+NUM_FILES=4096
+
+log "Downloading lorem.txt..."
+wget https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/lorem.txt || { log "Failed to download lorem.txt. Exiting."; exit 1; }
+
+mkdir -p "$DEST"
+for i in $(seq 1 "$NUM_FILES"); do
+    cp lorem.txt "$DEST/lorem$i.txt" || { log "Failed to copy lorem.txt to $DEST/lorem$i.txt. Exiting."; exit 1; }
+done
+
+log "File copy completed successfully."
