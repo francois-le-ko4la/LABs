@@ -34,18 +34,19 @@ log() {
 }
 
 log "Install MySQL package..."
-apt install git wget nfs-common mysql-server -y > /dev/null 2>&1
+apt install git wget nfs-common mysql-server -y > /dev/null 2>&1 || { log "Failed to install MySQL package. Exiting."; exit 1; }
 
 log "Enable/start service..."
 systemctl enable mysql.service > /dev/null 2>&1
 systemctl start mysql.service > /dev/null 2>&1
 
 log "Download test database..."
-git clone https://github.com/datacharmer/test_db.git > /dev/null 2>&1
+git clone https://github.com/datacharmer/test_db.git > /dev/null 2>&1 || { log "Failed to download test database. Exiting."; exit 1; }
+
 
 log "Import test database..."
 cd test_db
-mysql < employees.sql > /dev/null 2>&1
+mysql < employees.sql > /dev/null 2>&1 || { log "Failed to import test database. Exiting."; exit 1; }
 
 log "Define backup account..."
 cat << EOF > adduser.sql
@@ -53,7 +54,7 @@ CREATE USER '$MYSQL_RUBRIK_USER'@'localhost' IDENTIFIED BY '$MYSQL_RUBRIK_PASS';
 GRANT ALL PRIVILEGES ON *.* TO '$MYSQL_RUBRIK_USER'@'localhost' WITH GRANT OPTION;
 EOF
 
-sudo mysql < adduser.sql
+sudo mysql < adduser.sql 2>&1 || { log "Failed to import test database. Exiting."; exit 1; }
 
 
 log "Add dump script"
