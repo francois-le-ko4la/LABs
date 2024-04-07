@@ -34,18 +34,18 @@ log() {
 }
 
 log "Install MySQL package..."
-apt install git wget nfs-common mysql-server -y
+apt install git wget nfs-common mysql-server -y > /dev/null 2>&1
 
 log "Enable/start service..."
-systemctl enable mysql.service
-systemctl start mysql.service
+systemctl enable mysql.service > /dev/null 2>&1
+systemctl start mysql.service > /dev/null 2>&1
 
 log "Download test database..."
-git clone https://github.com/datacharmer/test_db.git
+git clone https://github.com/datacharmer/test_db.git > /dev/null 2>&1
 
 log "Import test database..."
 cd test_db
-mysql < employees.sql
+mysql < employees.sql > /dev/null 2>&1
 
 log "Define backup account..."
 cat << EOF > adduser.sql
