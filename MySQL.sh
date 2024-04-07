@@ -26,7 +26,7 @@
 # - ubuntu 20.04+
 #
 # SETUP:
-#  sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/master/MySQL.sh | sudo sh
+#  sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/MySQL.sh | sudo sh
 #
 # After running the script, you'll have:
 # - A MySQL database named "employees"
