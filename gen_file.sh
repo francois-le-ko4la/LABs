@@ -28,13 +28,13 @@
 # sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/gen_file.sh | sudo sh
 #
 
+DEST="/home/shares"
+NUM_FILES=4096
+
 # Logging function
 log() {
     echo "$(date --iso-8601=seconds) - GEN_FILE - $1"
 }
-
-DEST="/home/shares"
-NUM_FILES=4096
 
 log "Downloading lorem.txt..."
 wget -q https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/lorem.txt || { log "Failed to download lorem.txt. Exiting."; exit 1; }
