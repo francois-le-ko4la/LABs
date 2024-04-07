@@ -37,8 +37,9 @@ DEST="/home/shares"
 NUM_FILES=4096
 
 log "Downloading lorem.txt..."
-wget https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/lorem.txt || { log "Failed to download lorem.txt. Exiting."; exit 1; }
+wget -q https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/lorem.txt || { log "Failed to download lorem.txt. Exiting."; exit 1; }
 
+log "Copying files..."
 mkdir -p "$DEST"
 for i in $(seq 1 "$NUM_FILES"); do
     cp lorem.txt "$DEST/lorem$i.txt" || { log "Failed to copy lorem.txt to $DEST/lorem$i.txt. Exiting."; exit 1; }
