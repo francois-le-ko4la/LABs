@@ -25,12 +25,12 @@
 # - Linux platform: Debian 7+, Ubuntu 20/04+, RHEL 8+ or CentOS 9+
 #
 # SETUP:
-# sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/master/gen_file.sh | sudo sh
+# sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/gen_file.sh | sudo sh
 #
 
 DEST="/home/shares"
 
-wget https://raw.githubusercontent.com/francois-le-ko4la/LABs/master/lorem.txt
+wget https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/lorem.txt
 mkdir -p $DEST
 for i in {1..4096}; do cp lorem.txt $DEST/lorem$i.txt; done
  
