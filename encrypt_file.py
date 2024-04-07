@@ -30,7 +30,7 @@
 #   $ python3 -m venv /opt/rubrik/scripts/venv
 #   $ /opt/rubrik/scripts/venv/bin/python -m pip install cryptography
 #   or
-#   sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/master/ransim.sh | sudo sh
+#   sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/ransim.sh | sudo sh
 #
 # EXAMPLE:
 #   $ ./encrypt_file.py --delete-original encrypt key file/
