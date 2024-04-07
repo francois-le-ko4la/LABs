@@ -22,7 +22,7 @@
 # even if the author has been advised of the possibility of such damages.
 #
 # REQUIREMENTS:
-# - Linux platform: Debian 7+, Ubuntu 20/04+, RHEL 8+ or CentOS 9+
+# - Linux platform: Debian 7+, Ubuntu 20.04+, RHEL 8+ or CentOS 9+
 # - python 3.6+
 #
 # USAGE:
@@ -72,7 +72,7 @@ if [ "$(uname)" = "Linux" ]; then
              { [ "$ID" = "rhel" ] && [ "$VERSION_ID" -ge 8 ]; }; then
             log "CENTOS/RHEL detected."
             INST_PYTHON=2
-        elif { [ "$ID" = "centos" ] && [ "$VERSION_ID" -ge 7 ]; } then
+        elif [ "$ID" = "centos" ] && [ "$VERSION_ID" -ge 7 ]; then
             log "CENTOS detected. Downgrade cryptography."
             INST_PYTHON=2
             DOWN_CRYPTO="==36.0.2"
@@ -89,22 +89,22 @@ else
     exit 1
 fi
 
-log "Install python3-full..."
+log "Installing python3-full..."
 if [ "$INST_PYTHON" -eq 1 ]; then
-    apt-get -yq install python3-full > /dev/null 2>&1
+    apt-get -yq install python3-full > /dev/null 2>&1 || { log "Installation of python3-full failed."; exit 1; }
 elif [ "$INST_PYTHON" -eq 2 ]; then
-    yum install -y python3 > /dev/null 2>&1
+    yum install -y python3 > /dev/null 2>&1 || { log "Installation of python3 failed."; exit 1; }
 fi
 
-log "Create scripts repository..."
+log "Creating scripts repository..."
 mkdir -p $RBK_PATH
-log "Create python venv..."
-python3 -m venv $RBK_PATH/venv > /dev/null 2>&1
-log "Install cryptography lib..."
+log "Creating python venv..."
+python3 -m venv $RBK_PATH/venv > /dev/null 2>&1 || { log "Creation of python venv failed."; exit 1; }
+log "Installing cryptography lib..."
 $RBK_PATH/venv/bin/python -m pip install --upgrade pip > /dev/null 2>&1
-$RBK_PATH/venv/bin/python -m pip install cryptography$DOWN_CRYPTO > /dev/null 2>&1
-log "Download crypto script..."
-wget -q -O $RBK_PATH/encrypt_file.py $URL/encrypt_file.py > /dev/null 2>&1
-wget -q -O $RBK_PATH/key $URL/key > /dev/null 2>&1
+$RBK_PATH/venv/bin/python -m pip install cryptography$DOWN_CRYPTO > /dev/null 2>&1 || { log "Installation of cryptography library failed."; exit 1; }
+log "Downloading crypto script..."
+wget -q -O $RBK_PATH/encrypt_file.py $URL/encrypt_file.py > /dev/null 2>&1 || { log "Download of encrypt_file.py failed."; exit 1; }
+wget -q -O $RBK_PATH/key $URL/key > /dev/null 2>&1 || { log "Download of key failed."; exit 1; }
 chmod 754 $RBK_PATH/encrypt_file.py > /dev/null 2>&1
 log "Operation completed successfully."
