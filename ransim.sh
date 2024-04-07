@@ -26,7 +26,7 @@
 # - python 3.6+
 #
 # USAGE:
-#  sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/master/ransim.sh | sudo sh
+#  sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/ransim.sh | sudo sh
 #
 # CRONTAB EXAMPLE:
 # 0 4 * * * /opt/rubrik/scripts/encrypt_file.py --delete-original encrypt /opt/rubrik/scripts/key /path/to/files
@@ -51,7 +51,7 @@
 #
 
 RBK_PATH="/opt/rubrik/scripts"
-URL="https://raw.githubusercontent.com/francois-le-ko4la/LABs/master"
+URL="https://raw.githubusercontent.com/francois-le-ko4la/LABs/main"
 INST_PYTHON=0
 DOWN_CRYPTO=""
 
