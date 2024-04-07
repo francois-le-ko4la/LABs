@@ -43,7 +43,6 @@ systemctl start mysql.service > /dev/null 2>&1
 log "Download test database..."
 git clone https://github.com/datacharmer/test_db.git > /dev/null 2>&1 || { log "Failed to download test database. Exiting."; exit 1; }
 
-
 log "Import test database..."
 cd test_db
 mysql < employees.sql > /dev/null 2>&1 || { log "Failed to import test database. Exiting."; exit 1; }
@@ -56,9 +55,7 @@ EOF
 
 sudo mysql < adduser.sql 2>&1 || { log "Failed to import test database. Exiting."; exit 1; }
 
-
 log "Add dump script"
-
 mkdir -p $SCRIPT_DIR
 cat << EOF > $SCRIPT_PATH
 #!/bin/sh
@@ -73,7 +70,7 @@ cat << EOF > $SCRIPT_PATH
 # The author of this script cannot be held responsible for any potential damages or
 # losses resulting from its use.
 
-dotd=\$(date +"%Y_%m_%d")
+dotd=\$(date +"%Y_%m_%d_%H_%M_%S")
 user_name="$MYSQL_RUBRIK_USER"
 password="$MYSQL_RUBRIK_PASS"
 db_name="employees"
@@ -83,7 +80,6 @@ log() {
     echo "\$(date --iso-8601=seconds) - MySQLDump - \$1"
 }
 
-
 log "Starting Mysqldump..."
 
 if mysqldump -u "\$user_name" --password="\$password" "\$db_name" > "\$backup_dir/\$db_name-\$dotd.sql"; then
@@ -92,7 +88,6 @@ else
     log "Mysqldump failed, check logs for details..."
     exit 1
 fi
-
 
 log "Mysql dump cleanup"
 # Supprime les fichiers plus anciens de 3 jours dans le répertoire de sauvegarde
