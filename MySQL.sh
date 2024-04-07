@@ -33,6 +33,26 @@ log() {
     echo "$(date --iso-8601=seconds) - MySQL - $1"
 }
 
+# Check if the platform is Linux
+if [ "$(uname)" != "Linux" ]; then
+    log "This script only works on Linux systems."
+    exit 1
+fi
+
+# Check if the platform is Ubuntu 20.04 or newer
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    if [ "$ID" = "ubuntu" ] && [ "${VERSION_ID%.*}" -ge 20 ]; then
+        log "Ubuntu 20.04 or newer detected."
+    else
+        log "Unsupported Ubuntu version. Exiting..."
+        exit 1
+    fi
+else
+    log "Unable to detect the operating system."
+    exit 1
+fi
+
 log "Install MySQL package..."
 apt install -y git wget nfs-common mysql-server > /dev/null 2>&1 || { log "Failed to install MySQL package. Exiting."; exit 1; }
 
