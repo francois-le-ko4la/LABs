@@ -28,21 +28,26 @@ SLAMV_PATH="/mnt/rubrik_slamv"
 MYSQL_RUBRIK_USER="rubrik_svc"
 MYSQL_RUBRIK_PASS="Rubrik@123!"
 
-echo "$(date --iso-8601=seconds) - MySQL: install MySQL package"
+# Logging function
+log() {
+    echo "$(date --iso-8601=seconds) - MySQL - $1"
+}
+
+log "Install MySQL package..."
 apt install git wget nfs-common mysql-server -y
 
-echo "$(date --iso-8601=seconds) - MySQL: enable/start service"
+log "Enable/start service..."
 systemctl enable mysql.service
 systemctl start mysql.service
 
-echo "$(date --iso-8601=seconds) - MySQL: download test database"
+log "Download test database..."
 git clone https://github.com/datacharmer/test_db.git
 
-echo "$(date --iso-8601=seconds) - MySQL: import test database"
+log "Import test database..."
 cd test_db
 mysql < employees.sql
 
-echo "$(date --iso-8601=seconds) - MySQL: define backup account"
+log "Define backup account..."
 cat << EOF > adduser.sql
 CREATE USER '$MYSQL_RUBRIK_USER'@'localhost' IDENTIFIED BY '$MYSQL_RUBRIK_PASS';
 GRANT ALL PRIVILEGES ON *.* TO '$MYSQL_RUBRIK_USER'@'localhost' WITH GRANT OPTION;
@@ -51,7 +56,7 @@ EOF
 sudo mysql < adduser.sql
 
 
-echo "$(date --iso-8601=seconds) - MySQL: Add dump script"
+log "Add dump script"
 
 mkdir -p $SCRIPT_DIR
 cat << EOF > $SCRIPT_PATH
@@ -73,18 +78,22 @@ password="$MYSQL_RUBRIK_PASS"
 db_name="employees"
 backup_dir="$SLAMV_PATH"
 
-echo "\$(date --iso-8601=seconds) - Mysqldump database started"
+log() {
+    echo "\$(date --iso-8601=seconds) - MySQLDump - \$1"
+}
 
-# Exécute la commande mysqldump
+
+log "Starting Mysqldump..."
+
 if mysqldump -u "\$user_name" --password="\$password" "\$db_name" > "\$backup_dir/\$db_name-\$dotd.sql"; then
-    echo "\$(date --iso-8601=seconds) - Mysqldump database finished successfully"
+    log "Mysqldump database finished successfully!"
 else
-    echo "\$(date --iso-8601=seconds) - Mysqldump failed, check logs for details"
+    log "Mysqldump failed, check logs for details..."
     exit 1
 fi
 
 
-echo "\$(date --iso-8601=seconds) - Mysql dump cleanup"
+log "Mysql dump cleanup"
 # Supprime les fichiers plus anciens de 3 jours dans le répertoire de sauvegarde
 find "\$backup_dir" -type f -name "\$db_name-*.sql" -mtime +3 -exec rm {} \;
 
