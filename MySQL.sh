@@ -34,7 +34,7 @@ log() {
 }
 
 log "Install MySQL package..."
-apt install git wget nfs-common mysql-server -y > /dev/null 2>&1 || { log "Failed to install MySQL package. Exiting."; exit 1; }
+apt install -y git wget nfs-common mysql-server > /dev/null 2>&1 || { log "Failed to install MySQL package. Exiting."; exit 1; }
 
 log "Enable/start service..."
 systemctl enable mysql.service > /dev/null 2>&1
