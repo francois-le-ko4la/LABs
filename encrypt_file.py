@@ -184,10 +184,10 @@ if __name__ == "__main__":
     parser.add_argument("action", choices=["encrypt", "decrypt"], help="Specify whether to encrypt or decrypt files")
     parser.add_argument("key_file", help="Path to the file containing the encryption key")
     parser.add_argument("directory", help="Path to the directory to process")
-    parser.add_argument("--delete-original", action="store_true", help="Delete original files after encryption/decryption")
+    parser.add_argument("--delete-original", action="store_true", help="Delete original files after encryption/decryption", required=True)
     parser.add_argument("--log-file", help="Path to the log file")
     parser.add_argument("--debug", action="store_true", help="Enable debug mode to print detailed information")
     args = parser.parse_args()
-
+    
     file_encryptor = FileEncryptor(args.key_file, args.log_file, debug=args.debug)
     file_encryptor.process_directory(args.directory, encrypt=args.action == "encrypt", delete_original=args.delete_original)
