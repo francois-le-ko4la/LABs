@@ -29,3 +29,5 @@ AdvWorks: https://github.com/Microsoft/sql-server-samples/releases/download/adve
 
 EXEC sp_addsrvrolemember 'RUBRIK\demo', 'sysadmin';
 go
+ALTER DATABASE AdventureWorks2019 SET RECOVERY Full
+GO
