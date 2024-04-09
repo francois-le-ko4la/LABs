@@ -25,4 +25,4 @@ function Install-MSSP {
 Install-SQLServerExpress2019
 Install-MSSP
 
-AdvWorks: https://github.com/Microsoft/sql-server-samples/releases/download/adventureworks/AdventureWorksLT2022.bak
+AdvWorks: https://github.com/Microsoft/sql-server-samples/releases/download/adventureworks/AdventureWorksLT2019.bak
