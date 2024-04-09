@@ -10,4 +10,17 @@ function Install-SQLServerExpress2019 {
     Remove-Item $Path\$Installer
 }
 
+function Install-MSSP {
+    Write-Host "Downloading MSSP..."
+    $Path = $env:TEMP
+    $Installer = "SSMS-Setup-ENU.exe"
+    $URL = "https://aka.ms/ssmsfullsetup?clcid=0x409"
+    Invoke-WebRequest $URL -OutFile $Path\$Installer
+
+    Write-Host "Installing MSSP..."
+    Start-Process -FilePath $Path\$Installer -Args "/Install /Quiet /NorestartT" -Verb RunAs -Wait
+    Remove-Item $Path\$Installer
+}
+
 Install-SQLServerExpress2019
+Install-MSSP
