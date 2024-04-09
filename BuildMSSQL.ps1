@@ -14,7 +14,7 @@ function Install-MSSP {
     Write-Host "Downloading MSSP..."
     $Path = $env:TEMP
     $Installer = "SSMS-Setup-ENU.exe"
-    $URL = "https://aka.ms/ssmsfullsetup?clcid=0x409"
+    $URL = "https://go.microsoft.com/fwlink/?linkid=2257624&clcid=0x409"
     Invoke-WebRequest $URL -OutFile $Path\$Installer
 
     Write-Host "Installing MSSP..."
