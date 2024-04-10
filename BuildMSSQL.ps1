@@ -25,6 +25,9 @@ function Install-MSSP {
 Install-SQLServerExpress2019
 Install-MSSP
 
+
+Install-Module -Name SqlServer -Force -AllowClobber
+
 $srv = New-Object Microsoft.SqlServer.Management.Smo.Server "localhost\SQLEXPRESS"
 $srv.Databases
 
