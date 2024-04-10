@@ -27,10 +27,12 @@ Install-MSSP
 
 
 Install-Module -Name SqlServer -Force -AllowClobber
+Import-Module SqlServer
 
 $serverInstance = "localhost\SQLEXPRESS"
 $server = New-Object Microsoft.SqlServer.Management.Smo.Server($serverInstance)
 $server.Databases
+Invoke-Sqlcmd -ServerInstance $serverInstance -Query "EXEC sp_addsrvrolemember 'RUBRIK\demo', 'sysadmin'" -TrustServerCertificate
 
 AdvWorks: https://github.com/Microsoft/sql-server-samples/releases/download/adventureworks/AdventureWorksLT2019.bak
 
