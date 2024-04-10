@@ -25,6 +25,9 @@ function Install-MSSP {
 Install-SQLServerExpress2019
 Install-MSSP
 
+$srv = New-Object Microsoft.SqlServer.Management.Smo.Server "localhost\SQLEXPRESS"
+$srv.Databases
+
 AdvWorks: https://github.com/Microsoft/sql-server-samples/releases/download/adventureworks/AdventureWorksLT2019.bak
 
 EXEC sp_addsrvrolemember 'RUBRIK\demo', 'sysadmin';
