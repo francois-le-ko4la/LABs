@@ -86,6 +86,7 @@ function Install-SqlServerExpress2019 {
         Write-Host "Failed to download or install SQL Server Express 2019. Error: $_" -ForegroundColor Red
         return 1  # Stop the function execution with exit code 1
     }
+    return 0
 }
 
 
@@ -105,6 +106,7 @@ function Install-Ssms {
         Write-Host "Failed to download or install SSMS. Error: $_" -ForegroundColor Red
         return 1  # Stop the function execution with exit code 1
     }
+    return 0
 }
 
 
@@ -147,6 +149,7 @@ function Restore-Database {
         Write-Host "Failed to restore the database. Error: $_" -ForegroundColor Red
         return 1  # Stop the function execution with exit code 1
     }
+    return 0
 }
 
 
@@ -164,6 +167,7 @@ function Add-UserAccount {
         Write-Host "Failed to add user account $UserMssql as sysadmin. Error: $_" -ForegroundColor Red
         return 1  # Stop the function execution with exit code 1
     }
+    return 0
 }
 
 
