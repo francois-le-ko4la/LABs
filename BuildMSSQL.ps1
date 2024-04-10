@@ -36,6 +36,8 @@ Invoke-Sqlcmd -ServerInstance $serverInstance -Query "EXEC sp_addsrvrolemember '
 
 AdvWorks: https://github.com/Microsoft/sql-server-samples/releases/download/adventureworks/AdventureWorksLT2019.bak
 
+Invoke-Sqlcmd -ServerInstance $serverInstance -Query "ALTER DATABASE AdventureWorks2019 SET RECOVERY Full" -TrustServerCertificate
+
 EXEC sp_addsrvrolemember 'RUBRIK\demo', 'sysadmin';
 go
 ALTER DATABASE AdventureWorks2019 SET RECOVERY Full
