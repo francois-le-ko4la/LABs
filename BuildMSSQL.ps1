@@ -49,10 +49,10 @@ BEGIN
     DROP DATABASE AdventureWorks2019;
 END
 
-RESTORE DATABASE AdventureWorksLT2019
+RESTORE DATABASE AdventureWorks2019
 FROM DISK = @BackupPath
-WITH MOVE 'AdventureWorksLT2019_Data' TO 'C:\Program Files\Microsoft SQL Server\MSSQL15.SQLEXPRESS\MSSQL\DATA\AdventureWorksLT2019.mdf',
-     MOVE 'AdventureWorksLT2019_Log' TO 'C:\Program Files\Microsoft SQL Server\MSSQL15.SQLEXPRESS\MSSQL\DATA\AdventureWorksLT2019.ldf',
+WITH MOVE 'AdventureWorks2019_Data' TO 'C:\Program Files\Microsoft SQL Server\MSSQL15.SQLEXPRESS\MSSQL\DATA\AdventureWorksLT2019.mdf',
+     MOVE 'AdventureWorks2019_Log' TO 'C:\Program Files\Microsoft SQL Server\MSSQL15.SQLEXPRESS\MSSQL\DATA\AdventureWorksLT2019.ldf',
      REPLACE;
 ALTER DATABASE AdventureWorks2019 SET RECOVERY Full
 "@
