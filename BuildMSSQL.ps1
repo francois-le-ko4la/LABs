@@ -40,8 +40,9 @@
     File Name: BuildMSSQL.ps1
 
 .EXAMPLE
-    PS C:\> .\BuildMSSQL.ps1
-    # Runs the script to install SQL Server Express 2019, SSMS, and restore AdventureWorks2019 database.
+    - Edit the file and change variables to fit your needs.
+    - Runs the script to install SQL Server Express 2019, SSMS, and restore AdventureWorks2019 database:
+        PS C:\> .\BuildMSSQL.ps1
 
 #>
 
