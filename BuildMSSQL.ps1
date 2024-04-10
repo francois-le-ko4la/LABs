@@ -49,13 +49,13 @@
 # Check if PowerShell version is compatible
 if ($PSVersionTable.PSVersion.Major -lt 5 -or ($PSVersionTable.PSVersion.Major -eq 5 -and $PSVersionTable.PSVersion.Minor -lt 1)) {
     Write-Host "This script requires PowerShell 5.1 or later. Please upgrade your PowerShell version."
-    exit
+    exit 1
 }
 
 # Check if running as administrator
 if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Host "Please run this script as an administrator."
-    exit
+    exit 1
 }
 
 # Define variables
@@ -84,9 +84,9 @@ function Install-SqlServerExpress2019 {
         Remove-Item "$Path\$Installer"
     } catch {
         Write-Host "Failed to download or install SQL Server Express 2019. Error: $_" -ForegroundColor Red
-        return 1  # Stop the function execution with exit code 1
+        return $false
     }
-    return 0
+    return $true
 }
 
 
@@ -104,9 +104,9 @@ function Install-Ssms {
         Remove-Item "$Path\$Installer"
     } catch {
         Write-Host "Failed to download or install SSMS. Error: $_" -ForegroundColor Red
-        return 1  # Stop the function execution with exit code 1
+        return $false
     }
-    return 0
+    return $true
 }
 
 
@@ -147,9 +147,9 @@ function Restore-Database {
         Invoke-Sqlcmd -ServerInstance $ServerInstance -Query $SqlQueryRestoreDb -TrustServerCertificate
     } catch {
         Write-Host "Failed to restore the database. Error: $_" -ForegroundColor Red
-        return 1  # Stop the function execution with exit code 1
+        return $false
     }
-    return 0
+    return $true
 }
 
 
@@ -165,9 +165,9 @@ function Add-UserAccount {
         Invoke-Sqlcmd -ServerInstance $ServerInstance -Query "EXEC sp_addsrvrolemember '$UserMssql', 'sysadmin'" -TrustServerCertificate
     } catch {
         Write-Host "Failed to add user account $UserMssql as sysadmin. Error: $_" -ForegroundColor Red
-        return 1  # Stop the function execution with exit code 1
+        return $false
     }
-    return 0
+    return $true
 }
 
 
