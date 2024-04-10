@@ -139,7 +139,7 @@ function Restore-Database {
              MOVE 'AdventureWorksLT2019_Log' TO '$MssqlRoot\DATA\$DatabaseName.ldf',
              REPLACE;
         ALTER DATABASE $DatabaseName SET RECOVERY Full
-    "@
+"@
         Invoke-Sqlcmd -ServerInstance $ServerInstance -Query $SqlQueryRestoreDb -TrustServerCertificate
     } catch {
         Write-Host "Failed to restore the database. Error: $_" -ForegroundColor Red
