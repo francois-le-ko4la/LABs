@@ -84,7 +84,7 @@ function Install-SqlServerExpress2019 {
         Remove-Item "$Path\$Installer"
     } catch {
         Write-Host "Failed to download or install SQL Server Express 2019. Error: $_" -ForegroundColor Red
-        exit 1
+        return 1  # Stop the function execution with exit code 1
     }
 }
 
@@ -103,7 +103,7 @@ function Install-Ssms {
         Remove-Item "$Path\$Installer"
     } catch {
         Write-Host "Failed to download or install SSMS. Error: $_" -ForegroundColor Red
-        exit 1
+        return 1  # Stop the function execution with exit code 1
     }
 }
 
@@ -145,14 +145,45 @@ function Restore-Database {
         Invoke-Sqlcmd -ServerInstance $ServerInstance -Query $SqlQueryRestoreDb -TrustServerCertificate
     } catch {
         Write-Host "Failed to restore the database. Error: $_" -ForegroundColor Red
-        exit 1
+        return 1  # Stop the function execution with exit code 1
+    }
+}
+
+
+# Function to add user account
+function Add-UserAccount {
+    param (
+        [string]$UserMssql
+    )
+
+    try {
+        Write-Host "Adding user account $UserMssql as sysadmin..."
+        # Add the user as sysadmin
+        Invoke-Sqlcmd -ServerInstance $ServerInstance -Query "EXEC sp_addsrvrolemember '$UserMssql', 'sysadmin'" -TrustServerCertificate
+    } catch {
+        Write-Host "Failed to add user account $UserMssql as sysadmin. Error: $_" -ForegroundColor Red
+        return 1  # Stop the function execution with exit code 1
     }
 }
 
 
 # MAIN
-Install-SqlServerExpress2019
-Install-Ssms
-Restore-Database -ServerInstance $ServerInstance -DatabaseName $DatabaseName -BackupUrl $AdventureWorkUrl -UserMssql $UserMssql -MssqlRoot $MssqlRoot
-# Add the user as sysadmin
-Invoke-Sqlcmd -ServerInstance $ServerInstance -Query "EXEC sp_addsrvrolemember '$UserMssql', 'sysadmin'" -TrustServerCertificate
+if (-not (Install-SqlServerExpress2019)) {
+    Write-Host "Failed to install SQL Server Express 2019. Exiting script." -ForegroundColor Red
+    exit 1
+}
+
+if (-not (Install-Ssms)) {
+    Write-Host "Failed to install SSMS 2019. Exiting script." -ForegroundColor Red
+    exit 1
+}
+
+if (-not (Restore-Database -ServerInstance $ServerInstance -DatabaseName $DatabaseName -BackupUrl $AdventureWorkUrl -UserMssql $UserMssql -MssqlRoot $MssqlRoot)) {
+    Write-Host "Failed to recover the database. Exiting script." -ForegroundColor Red
+    exit 1
+}
+
+if (-not (Add-UserAccount -UserMssql $UserMssql)) {
+    Write-Host "Failed to add user account $UserMssql as sysadmin. Exiting script." -ForegroundColor Red
+    exit 1
+}
