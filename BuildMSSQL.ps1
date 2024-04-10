@@ -12,6 +12,27 @@
     - Internet connection to download SQL Server Express 2019 and SSMS.
     - PowerShell 5.1 or later.
 
+    DISCLAIMER:
+    This script is provided for educational and demonstration purposes only and
+    should be used with caution.
+    It is your responsibility to review, understand, and modify this script as 
+    needed to meet your specific requirements and environment.
+    The user remains responsible for reviewing and complying with the licensing
+    terms of the products installed by this script.
+    This script is not supported under any support program or service. 
+    All scripts are provided AS IS without warranty of any kind. 
+    The author further disclaims all implied warranties including, without
+    limitation, any implied warranties of merchantability or of fitness for a
+    particular purpose. 
+    The entire risk arising out of the use or performance of the sample scripts
+    and documentation remains with you.
+    In no event shall its authors, or anyone else involved in the creation,
+    production, or delivery of the scripts be liable for any damages whatsoever 
+    (including, without limitation, damages for loss of business profits, business
+    interruption, loss of business information, or other pecuniary loss) 
+    arising out of the use of or inability to use the sample scripts or documentation,
+    even if the author has been advised of the possibility of such damages.
+    
 .PARAMETER None
     This script does not accept any parameters.
 
