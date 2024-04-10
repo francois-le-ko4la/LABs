@@ -25,6 +25,10 @@ function Install-MSSP {
 Install-SQLServerExpress2019
 Install-MSSP
 
+$AdventureWork="https://github.com/Microsoft/sql-server-samples/releases/download/adventureworks/AdventureWorksLT2019.bak"
+$backupPath = "C:\Program Files\Microsoft SQL Server\MSSQL15.SQLEXPRESS\MSSQL\Backup\AdventureWorksLT2019.bak"
+Invoke-WebRequest -Uri $AdventureWork -OutFile $backupPath
+
 
 Install-Module -Name SqlServer -Force -AllowClobber
 Import-Module SqlServer
@@ -34,11 +38,23 @@ $server = New-Object Microsoft.SqlServer.Management.Smo.Server($serverInstance)
 $server.Databases
 Invoke-Sqlcmd -ServerInstance $serverInstance -Query "EXEC sp_addsrvrolemember 'RUBRIK\demo', 'sysadmin'" -TrustServerCertificate
 
-AdvWorks: https://github.com/Microsoft/sql-server-samples/releases/download/adventureworks/AdventureWorksLT2019.bak
-
-Invoke-Sqlcmd -ServerInstance $serverInstance -Query "ALTER DATABASE AdventureWorks2019 SET RECOVERY Full" -TrustServerCertificate
-
-EXEC sp_addsrvrolemember 'RUBRIK\demo', 'sysadmin';
-go
-ALTER DATABASE AdventureWorks2019 SET RECOVERY Full
+$sqlQuery_restore_db = @"
+USE master;
 GO
+DECLARE @BackupPath NVARCHAR(500) = 'C:\Program Files\Microsoft SQL Server\MSSQL15.SQLEXPRESS\MSSQL\backup\AdventureWorksLT2019.bak';
+
+IF DB_ID('AdventureWorks2019') IS NOT NULL
+BEGIN
+    ALTER DATABASE AdventureWorks2019 SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE AdventureWorks2019;
+END
+
+RESTORE DATABASE AdventureWorksLT2019
+FROM DISK = @BackupPath
+WITH MOVE 'AdventureWorksLT2019_Data' TO 'C:\Program Files\Microsoft SQL Server\MSSQL15.SQLEXPRESS\MSSQL\DATA\AdventureWorksLT2019.mdf',
+     MOVE 'AdventureWorksLT2019_Log' TO 'C:\Program Files\Microsoft SQL Server\MSSQL15.SQLEXPRESS\MSSQL\DATA\AdventureWorksLT2019.ldf',
+     REPLACE;
+ALTER DATABASE AdventureWorks2019 SET RECOVERY Full
+"@
+Invoke-Sqlcmd -ServerInstance $serverInstance -Query $sqlQuery_restore_db -TrustServerCertificate
+
