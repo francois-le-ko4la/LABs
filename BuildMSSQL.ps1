@@ -28,8 +28,9 @@ Install-MSSP
 
 Install-Module -Name SqlServer -Force -AllowClobber
 
-$srv = New-Object Microsoft.SqlServer.Management.Smo.Server "localhost\SQLEXPRESS"
-$srv.Databases
+$serverInstance = "localhost\SQLEXPRESS"
+$server = New-Object Microsoft.SqlServer.Management.Smo.Server($serverInstance)
+$server.Databases
 
 AdvWorks: https://github.com/Microsoft/sql-server-samples/releases/download/adventureworks/AdventureWorksLT2019.bak
 
