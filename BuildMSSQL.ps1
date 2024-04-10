@@ -17,9 +17,6 @@
 
 .NOTES
     File Name: BuildMSSQL.ps1
-    Author   : [Your Name]
-    Version  : 1.0
-    Date     : [Date]
 
 .EXAMPLE
     PS C:\> .\BuildMSSQL.ps1
