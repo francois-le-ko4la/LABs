@@ -84,6 +84,7 @@ function Install-SqlServerExpress2019 {
         Remove-Item "$Path\$Installer"
     } catch {
         Write-Host "Failed to download or install SQL Server Express 2019. Error: $_" -ForegroundColor Red
+        exit 1
     }
 }
 
@@ -102,6 +103,7 @@ function Install-Ssms {
         Remove-Item "$Path\$Installer"
     } catch {
         Write-Host "Failed to download or install SSMS. Error: $_" -ForegroundColor Red
+        exit 1
     }
 }
 
@@ -143,6 +145,7 @@ function Restore-Database {
         Invoke-Sqlcmd -ServerInstance $ServerInstance -Query $SqlQueryRestoreDb -TrustServerCertificate
     } catch {
         Write-Host "Failed to restore the database. Error: $_" -ForegroundColor Red
+        exit 1
     }
 }
 
