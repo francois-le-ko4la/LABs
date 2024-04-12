@@ -32,6 +32,9 @@
     interruption, loss of business information, or other pecuniary loss) 
     arising out of the use of or inability to use the sample scripts or documentation,
     even if the author has been advised of the possibility of such damages.
+
+    INSTALLATION:
+    Invoke-WebRequest -Uri https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/BuildMSSQL.ps1 -UseBasicParsing -OutFile BuildMSSQL.ps1; Invoke-Expression -Command BuildMSSQL.ps1
     
 .PARAMETER None
     This script does not accept any parameters.
