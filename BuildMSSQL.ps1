@@ -80,6 +80,7 @@ function Install-SqlServerExpress2019 {
     $Installer = $MssqlBin
     $Url = $MssqlUrl
     try {
+        $ProgressPreference = 'SilentlyContinue'
         Invoke-WebRequest $Url -OutFile "$Path\$Installer" -ErrorAction Stop
 
         Write-Host "Installing SQL Server Express..."
@@ -100,6 +101,7 @@ function Install-Ssms {
     $Installer = $SsmsBin
     $Url = $SsmsUrl
     try {
+        $ProgressPreference = 'SilentlyContinue'
         Invoke-WebRequest $Url -OutFile "$Path\$Installer" -ErrorAction Stop
 
         Write-Host "Installing SSMS..."
@@ -123,9 +125,14 @@ function Restore-Database {
         [string]$MssqlRoot
     )
 
+    # Install powershell lib
+    Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+    Install-Module -Name SqlServer -Scope CurrentUser
+    Import-Module -Name SqlServer
     # Download the backup file
     $BackupPath = Join-Path -Path $MssqlRoot -ChildPath "Backup\$DatabaseName.bak"
     try {
+        $ProgressPreference = 'SilentlyContinue'
         Invoke-WebRequest -Uri $BackupUrl -OutFile $BackupPath -ErrorAction Stop
 
         # Restore script
@@ -174,6 +181,28 @@ function Add-UserAccount {
 }
 
 
+# function to add Firewall rules
+function Add-FirewallRule {
+    param(
+        [int]$Port1,
+        [int]$Port2
+    )
+
+    try {
+        Write-Host "Adding Firewall rules..."
+        # Create a new inbound rule for Port1
+        New-NetFirewallRule -DisplayName "Allow Port $Port1" -Direction Inbound -LocalPort $Port1 -Protocol TCP -Action Allow -ErrorAction Stop
+
+        # Create a new inbound rule for Port2
+        New-NetFirewallRule -DisplayName "Allow Port $Port2" -Direction Inbound -LocalPort $Port2 -Protocol TCP -Action Allow -ErrorAction Stop
+    } catch {
+        Write-Host "Error occurred while adding firewall rules: $_"
+        return $false
+    }
+    return $true
+}
+
+
 # MAIN
 if (-not (Install-SqlServerExpress2019)) {
     Write-Host "Failed to install SQL Server Express 2019. Exiting script." -ForegroundColor Red
@@ -192,5 +221,10 @@ if (-not (Restore-Database -ServerInstance $ServerInstance -DatabaseName $Databa
 
 if (-not (Add-UserAccount -UserMssql $UserMssql)) {
     Write-Host "Failed to add user account $UserMssql as sysadmin. Exiting script." -ForegroundColor Red
+    exit 1
+}
+
+if (-not (Add-FirewallRule -Port1 12800 -Port2 12801)) {
+    Write-Host "Failed to add firewall rules." -ForegroundColor Red
     exit 1
 }
