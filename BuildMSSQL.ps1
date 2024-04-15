@@ -72,10 +72,32 @@ $MssqlBin = "SQL2019-SSEI-Expr.exe"
 $SsmsUrl = "https://go.microsoft.com/fwlink/?linkid=2257624&clcid=0x409"
 $SsmsBin = "SSMS-Setup-ENU.exe"
 
+# Define message severity variables
+$info = "info"
+$error = "error"
+
+
+# Function to log messages
+function Log-Message {
+    param (
+        [string]$Severity,
+        [string]$Message
+    )
+
+    $Timestamp = Get-Date -Format "yyyy-MM-ddTHH:mm:ss"
+    $Context = "MSSQL"
+    
+    if ($Severity -eq $info) {
+        Write-Host "$Timestamp - $Context - info - $Message"
+    } elseif ($Severity -eq $error) {
+        Write-Host "$Timestamp - $Context - error - $Message" -ForegroundColor Red
+    }
+}
+
 
 # Function to install SQL Server Express 2019
 function Install-SqlServerExpress2019 {
-    Write-Host "Downloading SQL Server Express 2019..."
+    Log-Message $info "Downloading SQL Server Express 2019..."
     $Path = $env:TEMP
     $Installer = $MssqlBin
     $Url = $MssqlUrl
@@ -83,11 +105,11 @@ function Install-SqlServerExpress2019 {
         $ProgressPreference = 'SilentlyContinue'
         Invoke-WebRequest $Url -OutFile "$Path\$Installer" -ErrorAction Stop
 
-        Write-Host "Installing SQL Server Express..."
+        Log-Message $info "Installing SQL Server Express..."
         Start-Process -FilePath "$Path\$Installer" -Args "/ACTION=INSTALL /IACCEPTSQLSERVERLICENSETERMS /QUIET" -Verb RunAs -Wait
         Remove-Item "$Path\$Installer"
     } catch {
-        Write-Host "Failed to download or install SQL Server Express 2019. Error: $_" -ForegroundColor Red
+        Log-Message $error "Failed to download or install SQL Server Express 2019. Error: $_"
         return $false
     }
     return $true
@@ -96,7 +118,7 @@ function Install-SqlServerExpress2019 {
 
 # Function to install SQL Server Management Studio (SSMS)
 function Install-Ssms {
-    Write-Host "Downloading SSMS..."
+    Log-Message $info "Downloading SSMS..."
     $Path = $env:TEMP
     $Installer = $SsmsBin
     $Url = $SsmsUrl
@@ -104,11 +126,11 @@ function Install-Ssms {
         $ProgressPreference = 'SilentlyContinue'
         Invoke-WebRequest $Url -OutFile "$Path\$Installer" -ErrorAction Stop
 
-        Write-Host "Installing SSMS..."
+        Log-Message $info "Installing SSMS..."
         Start-Process -FilePath "$Path\$Installer" -Args "/Install /Quiet /NorestartT" -Verb RunAs -Wait
         Remove-Item "$Path\$Installer"
     } catch {
-        Write-Host "Failed to download or install SSMS. Error: $_" -ForegroundColor Red
+        Log-Message $error "Failed to download or install SSMS. Error: $_"
         return $false
     }
     return $true
@@ -125,6 +147,7 @@ function Restore-Database {
         [string]$MssqlRoot
     )
 
+    Log-Message $info "Restoring test database..."
     # Install powershell lib
     Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
     Install-Module -Name SqlServer -Scope CurrentUser
@@ -156,7 +179,7 @@ function Restore-Database {
 "@
         Invoke-Sqlcmd -ServerInstance $ServerInstance -Query $SqlQueryRestoreDb -TrustServerCertificate
     } catch {
-        Write-Host "Failed to restore the database. Error: $_" -ForegroundColor Red
+        Log-Message $error "Failed to restore the database. Error: $_"
         return $false
     }
     return $true
@@ -170,11 +193,11 @@ function Add-UserAccount {
     )
 
     try {
-        Write-Host "Adding user account $UserMssql as sysadmin..."
+        Log-Message $info "Adding user account $UserMssql as sysadmin..."
         # Add the user as sysadmin
         Invoke-Sqlcmd -ServerInstance $ServerInstance -Query "EXEC sp_addsrvrolemember '$UserMssql', 'sysadmin'" -TrustServerCertificate
     } catch {
-        Write-Host "Failed to add user account $UserMssql as sysadmin. Error: $_" -ForegroundColor Red
+        Log-Message $error "Failed to add user account $UserMssql as sysadmin. Error: $_"
         return $false
     }
     return $true
@@ -189,42 +212,41 @@ function Add-FirewallRule {
     )
 
     try {
-        Write-Host "Adding Firewall rules..."
+        Log-Message $info "Adding Firewall rules..."
         # Create a new inbound rule for Port1
         New-NetFirewallRule -DisplayName "Allow Port $Port1" -Direction Inbound -LocalPort $Port1 -Protocol TCP -Action Allow -ErrorAction Stop
 
         # Create a new inbound rule for Port2
         New-NetFirewallRule -DisplayName "Allow Port $Port2" -Direction Inbound -LocalPort $Port2 -Protocol TCP -Action Allow -ErrorAction Stop
     } catch {
-        Write-Host "Error occurred while adding firewall rules: $_"
+        Log-Message $error "Error occurred while adding firewall rules: $_"
         return $false
     }
     return $true
 }
 
-
 # MAIN
 if (-not (Install-SqlServerExpress2019)) {
-    Write-Host "Failed to install SQL Server Express 2019. Exiting script." -ForegroundColor Red
+    Log-Message $error "Failed to install SQL Server Express 2019. Exiting script."
     exit 1
 }
 
 if (-not (Install-Ssms)) {
-    Write-Host "Failed to install SSMS 2019. Exiting script." -ForegroundColor Red
+    Log-Message $error "Failed to install SSMS 2019. Exiting script."
     exit 1
 }
 
 if (-not (Restore-Database -ServerInstance $ServerInstance -DatabaseName $DatabaseName -BackupUrl $AdventureWorkUrl -UserMssql $UserMssql -MssqlRoot $MssqlRoot)) {
-    Write-Host "Failed to recover the database. Exiting script." -ForegroundColor Red
+    Log-Message $error "Failed to recover the database. Exiting script."
     exit 1
 }
 
 if (-not (Add-UserAccount -UserMssql $UserMssql)) {
-    Write-Host "Failed to add user account $UserMssql as sysadmin. Exiting script." -ForegroundColor Red
+    Log-Message $error "Failed to add user account $UserMssql as sysadmin. Exiting script."
     exit 1
 }
 
 if (-not (Add-FirewallRule -Port1 12800 -Port2 12801)) {
-    Write-Host "Failed to add firewall rules." -ForegroundColor Red
+    Log-Message $error "Failed to add firewall rules."
     exit 1
 }
