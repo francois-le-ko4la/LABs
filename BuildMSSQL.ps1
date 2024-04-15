@@ -184,7 +184,7 @@ function Install-Ssms {
         Invoke-WebRequest $Url -OutFile "$Path\$Installer" -ErrorAction Stop
 
         Log-Message $info "Installing SSMS..."
-        Start-Process -FilePath "$Path\$Installer" -Args "/Install /Quiet /NorestartT" -Verb RunAs -Wait
+        Start-Process -FilePath "$Path\$Installer" -Args "/Install /Quiet /Norestart" -Verb RunAs -Wait
         Remove-Item "$Path\$Installer"
     } catch {
         Log-Message $error "Failed to download or install SSMS. Error: $_"
