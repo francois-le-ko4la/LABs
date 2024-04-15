@@ -149,18 +149,22 @@ function Check-SSMSInstalled {
 function Install-SqlServerExpress2019 {
     if (Check-MSSQLInstalled) {
         Log-Message $info "Microsoft SQL Server is already installed on this system. No changes made."
-        return $true
     }
     Log-Message $info "Downloading SQL Server Express 2019..."
     $Path = $env:TEMP
     $Installer = $MssqlBin
     $Url = $MssqlUrl
     try {
-        $ProgressPreference = 'SilentlyContinue'
-        Invoke-WebRequest $Url -OutFile "$Path\$Installer" -ErrorAction Stop
+        # Test if the installer file already exists
+        if (Test-Path -Path $Path\$Installer) {
+            Write-Host "SQL Server Express 2019 installer already exists. Skipping download."
+        } else {
+            $ProgressPreference = 'SilentlyContinue'
+            Invoke-WebRequest $Url -OutFile "$Path\$Installer" -ErrorAction Stop
+        }
         Log-Message $info "Installing SQL Server Express..."
-        Start-Process -FilePath "$Path\$Installer" -Args "/ACTION=INSTALL /IACCEPTSQLSERVERLICENSETERMS /QUIET /HideProgressBar" -Verb RunAs -Wait
-        Remove-Item "$Path\$Installer"
+        $InstallArgs = "/ACTION=INSTALL", "/IACCEPTSQLSERVERLICENSETERMS", "/QUIET"
+        Start-Process -FilePath "$Path\$Installer" -ArgumentList $InstallArgs -Verb RunAs -Wait
     } catch {
         Log-Message $error "Failed to download or install SQL Server Express 2019. Error: $_"
         return $false
@@ -180,12 +184,15 @@ function Install-Ssms {
     $Installer = $SsmsBin
     $Url = $SsmsUrl
     try {
-        $ProgressPreference = 'SilentlyContinue'
-        Invoke-WebRequest $Url -OutFile "$Path\$Installer" -ErrorAction Stop
-
+        # Test if the installer file already exists
+        if (Test-Path -Path $Path\$Installer) {
+            Write-Host "SSMS installer already exists. Skipping download."
+        } else {
+            $ProgressPreference = 'SilentlyContinue'
+            Invoke-WebRequest $Url -OutFile "$Path\$Installer" -ErrorAction Stop
+        }
         Log-Message $info "Installing SSMS..."
-        Start-Process -FilePath "$Path\$Installer" -Args "/Install /Quiet /Norestart" -Verb RunAs -Wait
-        Remove-Item "$Path\$Installer"
+        Start-Process -FilePath "$Path\$Installer" -Args "/Install /Quiet /NorestartT" -Verb RunAs -Wait
     } catch {
         Log-Message $error "Failed to download or install SSMS. Error: $_"
         return $false
