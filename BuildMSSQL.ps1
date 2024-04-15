@@ -71,6 +71,7 @@ $MssqlUrl = "https://go.microsoft.com/fwlink/?linkid=866658"
 $MssqlBin = "SQL2019-SSEI-Expr.exe"
 $SsmsUrl = "https://go.microsoft.com/fwlink/?linkid=2257624&clcid=0x409"
 $SsmsBin = "SSMS-Setup-ENU.exe"
+$FwLabel = "Rubrik - Allow port"
 
 # Define message severity variables
 $info = "info"
@@ -147,7 +148,7 @@ function Check-SSMSInstalled {
 # Function to install SQL Server Express 2019
 function Install-SqlServerExpress2019 {
     if (Check-MSSQLInstalled) {
-        Log-Message $info "Microsoft SQL Server is installed on this system. (no change)"
+        Log-Message $info "Microsoft SQL Server is already installed on this system. No changes made."
         return $true
     }
     Log-Message $info "Downloading SQL Server Express 2019..."
@@ -171,7 +172,7 @@ function Install-SqlServerExpress2019 {
 # Function to install SQL Server Management Studio (SSMS)
 function Install-Ssms {
     if (Check-SSMSInstalled) {
-        Log-Message $info "SSMS is installed on this system. (no change)"
+        Log-Message $info "SSMS is already installed on this system. No changes made."
         return $true
     }
     Log-Message $info "Downloading SSMS..."
@@ -260,6 +261,47 @@ function Add-UserAccount {
 }
 
 
+# Function to check if a port is already allowed in the firewall
+function Check-FirewallPortClosed {
+    param (
+        [int]$Port
+    )
+
+    # Get all firewall rules
+    $firewallRules = Get-NetFirewallRule
+
+    # Check if any rule exists for the specified port
+    $portRule = $firewallRules | Where-Object { $_.DisplayName -eq "$FwLabel $Port" }
+
+    if ($portRule) {
+        return $false
+    } else {
+        return $true
+    }
+}
+
+
+# Function to add a firewall rule for a single port
+function Add-FirewallRuleSinglePort {
+    param (
+        [int]$Port
+    )
+
+    try {
+        if (Check-FirewallPortClosed -Port $Port) {
+            New-NetFirewallRule -DisplayName "$FwLabel $Port" -Direction Inbound -LocalPort $Port -Protocol TCP -Action Allow -ErrorAction Stop
+            Log-Message $info "Firewall rule for port $Port added successfully."
+        } else {
+            Log-Message $info "Firewall rule for port $Port already exists. No changes made."
+        }
+    } catch {
+        Log-Message $error "Error occurred while adding firewall rule: $_"
+        return $false
+    }
+    return $true
+}
+
+
 # function to add Firewall rules
 function Add-FirewallRule {
     param(
@@ -268,18 +310,17 @@ function Add-FirewallRule {
     )
 
     try {
-        Log-Message $info "Adding Firewall rules..."
-        # Create a new inbound rule for Port1
-        New-NetFirewallRule -DisplayName "Allow Port $Port1" -Direction Inbound -LocalPort $Port1 -Protocol TCP -Action Allow -ErrorAction Stop
-
-        # Create a new inbound rule for Port2
-        New-NetFirewallRule -DisplayName "Allow Port $Port2" -Direction Inbound -LocalPort $Port2 -Protocol TCP -Action Allow -ErrorAction Stop
+        if ((Add-FirewallRuleSinglePort -Port $Port1) -and (Add-FirewallRuleSinglePort -Port $Port2)) {
+            return $true
+        } else {
+            return $false
+        }
     } catch {
         Log-Message $error "Error occurred while adding firewall rules: $_"
         return $false
     }
-    return $true
 }
+
 
 # MAIN
 if (Check-RebootRequired) {
