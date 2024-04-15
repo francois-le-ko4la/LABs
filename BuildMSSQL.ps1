@@ -75,6 +75,7 @@ $SsmsBin = "SSMS-Setup-ENU.exe"
 # Define message severity variables
 $info = "info"
 $error = "error"
+$Context = "BuildMSSQL"
 
 
 # Function to log messages
@@ -84,9 +85,7 @@ function Log-Message {
         [string]$Message
     )
 
-    $Timestamp = Get-Date -Format "yyyy-MM-ddTHH:mm:ss"
-    $Context = "MSSQL"
-    
+    $Timestamp = Get-Date -Format "yyyy-MM-ddTHH:mm:ss"    
     if ($Severity -eq $info) {
         Write-Host "$Timestamp - $Context - info - $Message"
     } elseif ($Severity -eq $error) {
@@ -95,8 +94,62 @@ function Log-Message {
 }
 
 
+# Function to check if a reboot is required
+function Check-RebootRequired {
+    $RebootRequired = $false
+    $HKLM = 2147483650 # HKEY_LOCAL_MACHINE
+
+    $AutoRestartKey = "SYSTEM\CurrentControlSet\Control\Session Manager"
+    $AutoRestartValue = "PendingFileRenameOperations"
+
+    try {
+        $PendingFileRenameOperations = Get-ItemProperty -Path "HKLM:\$AutoRestartKey" -Name $AutoRestartValue -ErrorAction Stop
+        if ($PendingFileRenameOperations -ne $null) {
+            $RebootRequired = $true
+        }
+    } catch {
+        # No PendingFileRenameOperations key found
+        $RebootRequired = $false
+    }
+
+    return $RebootRequired
+}
+
+
+# Function to check if MSSQL is installed
+function Check-MSSQLInstalled {
+    $sqlServices = Get-Service | Where-Object { $_.DisplayName -like "SQL Server*" }
+    if ($sqlServices) {
+        return $true
+    } else {
+        return $false
+    }
+}
+
+
+# Function to check if SSMS is installed
+function Check-SSMSInstalled {
+    $ssmsDisplayName = "Microsoft SQL Server Management Studio"
+
+    # Get a list of installed applications
+    $installedApps = Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* |
+                     Select-Object DisplayName, UninstallString |
+                     Where-Object { $_.DisplayName -like "*$ssmsDisplayName*" }
+
+    if ($installedApps) {
+        return $true
+    } else {
+        return $false
+    }
+}
+
+
 # Function to install SQL Server Express 2019
 function Install-SqlServerExpress2019 {
+    if (Check-MSSQLInstalled) {
+        Log-Message $info "Microsoft SQL Server is installed on this system. (no change)"
+        return $true
+    }
     Log-Message $info "Downloading SQL Server Express 2019..."
     $Path = $env:TEMP
     $Installer = $MssqlBin
@@ -104,9 +157,8 @@ function Install-SqlServerExpress2019 {
     try {
         $ProgressPreference = 'SilentlyContinue'
         Invoke-WebRequest $Url -OutFile "$Path\$Installer" -ErrorAction Stop
-
         Log-Message $info "Installing SQL Server Express..."
-        Start-Process -FilePath "$Path\$Installer" -Args "/ACTION=INSTALL /IACCEPTSQLSERVERLICENSETERMS /QUIET" -Verb RunAs -Wait
+        Start-Process -FilePath "$Path\$Installer" -Args "/ACTION=INSTALL /IACCEPTSQLSERVERLICENSETERMS /QUIET /HideProgressBar" -Verb RunAs -Wait
         Remove-Item "$Path\$Installer"
     } catch {
         Log-Message $error "Failed to download or install SQL Server Express 2019. Error: $_"
@@ -118,6 +170,10 @@ function Install-SqlServerExpress2019 {
 
 # Function to install SQL Server Management Studio (SSMS)
 function Install-Ssms {
+    if (Check-SSMSInstalled) {
+        Log-Message $info "SSMS is installed on this system. (no change)"
+        return $true
+    }
     Log-Message $info "Downloading SSMS..."
     $Path = $env:TEMP
     $Installer = $SsmsBin
@@ -226,6 +282,11 @@ function Add-FirewallRule {
 }
 
 # MAIN
+if (Check-RebootRequired) {
+    Log-Message $error "A computer restart is required. Please restart your computer and try again."
+    exit 1
+}
+
 if (-not (Install-SqlServerExpress2019)) {
     Log-Message $error "Failed to install SQL Server Express 2019. Exiting script."
     exit 1
