@@ -352,10 +352,10 @@ function Add-FirewallRule {
 
 
 # MAIN
-#if (Check-RebootRequired) {
-#    Log-Message $error "A computer restart is required. Please restart your computer and try again."
-#    exit 1
-#}
+if (Check-RebootRequired) {
+    Log-Message $error "A computer restart is required. Please restart your computer and try again."
+    exit 1
+}
 
 Log-Message $info "Rubrik account defined: $UserMssql"
 
