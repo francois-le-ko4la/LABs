@@ -45,13 +45,15 @@
 
 .EXAMPLE
     - Edit the file and change variables to fit your needs.
-    - Runs the script to install SQL Server Express 2019, SSMS, and restore AdventureWorks2019 database:
-        PS C:\> .\BuildMSSQL.ps1
+    - Runs the script to install SQL Server Express, SSMS, and restore AdventureWorks database:
+        PS C:\> .\BuildMSSQL.ps1 -UserMssql "RUBRIK\demo" -Release 22
+    - By default, we will deploy MSSQL 19. We can deploy 19 or 22 according to -Release parameter
 
 #>
 
 param (
-    [string]$UserMssql = "RUBRIK\demo"
+    [string]$UserMssql = "RUBRIK\demo",
+    [string]$Release = "19"
 )
 
 # Check if PowerShell version is compatible
@@ -68,14 +70,29 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
 
 # Define variables
 $ServerInstance = "localhost\SQLEXPRESS"
-$DatabaseName = "AdventureWorks2019"
-$MssqlRoot = "C:\Program Files\Microsoft SQL Server\MSSQL15.SQLEXPRESS\MSSQL"
-$AdventureWorkUrl = "https://github.com/Microsoft/sql-server-samples/releases/download/adventureworks/AdventureWorksLT2019.bak"
-$MssqlUrl = "https://go.microsoft.com/fwlink/?linkid=866658"
-$MssqlBin = "SQL2019-SSEI-Expr.exe"
-$SsmsUrl = "https://go.microsoft.com/fwlink/?linkid=2257624&clcid=0x409"
+$DatabaseName = "AdventureWorks20$Release"
+$AdventureWorkUrl = "https://github.com/Microsoft/sql-server-samples/releases/download/adventureworks/AdventureWorksLT20$Release.bak"
+$MssqlBin = "SQL$Release-SSEI-Expr.exe"
 $SsmsBin = "SSMS-Setup-ENU.exe"
 $FwLabel = "Rubrik - Allow port"
+
+$MssqlRoot = ""
+$MssqlUrl = ""
+$SsmsUrl = ""
+
+if ($Release -eq "19") {
+    $MssqlRoot = "C:\Program Files\Microsoft SQL Server\MSSQL15.SQLEXPRESS\MSSQL"
+    $MssqlUrl = "https://download.microsoft.com/download/7/f/8/7f8a9c43-8c8a-4f7c-9f92-83c18d96b681/SQL2019-SSEI-Expr.exe"
+    $SsmsUrl = "https://go.microsoft.com/fwlink/?linkid=2257624&clcid=0x409"
+} elseif ($Release -eq "22") {
+    $MssqlRoot = "C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL"
+    $MssqlUrl = "https://download.microsoft.com/download/5/1/4/5145fe04-4d30-4b85-b0d1-39533663a2f1/SQL2022-SSEI-Expr.exe"
+    $SsmsUrl = "https://aka.ms/ssmsfullsetup"
+} else {
+    # Faire quelque chose si la valeur de Release n'est ni 19 ni 22
+    Write-Host "Unrecognized version. Please specify 19 or 22 for the SQL Server version."
+    exit 1
+}
 
 # Define message severity variables
 $info = "info"
@@ -150,11 +167,12 @@ function Check-SSMSInstalled {
 
 
 # Function to install SQL Server Express 2019
-function Install-SqlServerExpress2019 {
+function Install-SqlServerExpress {
     if (Check-MSSQLInstalled) {
         Log-Message $info "Microsoft SQL Server is already installed on this system. No changes made."
+		return $true
     }
-    Log-Message $info "Downloading SQL Server Express 2019..."
+    Log-Message $info "Downloading SQL Server Express 20$Release..."
     $Path = $env:TEMP
     $Installer = $MssqlBin
     $Url = $MssqlUrl
@@ -240,8 +258,8 @@ function Restore-Database {
 
         RESTORE DATABASE $DatabaseName
         FROM DISK = @BackupPath
-        WITH MOVE 'AdventureWorksLT2019_Data' TO '$MssqlRoot\DATA\$DatabaseName.mdf',
-             MOVE 'AdventureWorksLT2019_Log' TO '$MssqlRoot\DATA\$DatabaseName.ldf',
+        WITH MOVE 'AdventureWorksLT20$($Release)_Data' TO '$MssqlRoot\DATA\$DatabaseName.mdf',
+             MOVE 'AdventureWorksLT20$($Release)_Log' TO '$MssqlRoot\DATA\$DatabaseName.ldf',
              REPLACE;
         ALTER DATABASE $DatabaseName SET RECOVERY Full
 "@
@@ -334,14 +352,14 @@ function Add-FirewallRule {
 
 
 # MAIN
-if (Check-RebootRequired) {
-    Log-Message $error "A computer restart is required. Please restart your computer and try again."
-    exit 1
-}
+#if (Check-RebootRequired) {
+#    Log-Message $error "A computer restart is required. Please restart your computer and try again."
+#    exit 1
+#}
 
 Log-Message $info "Rubrik account defined: $UserMssql"
 
-if (-not (Install-SqlServerExpress2019)) {
+if (-not (Install-SqlServerExpress)) {
     Log-Message $error "Failed to install SQL Server Express 2019. Exiting script."
     exit 1
 }
