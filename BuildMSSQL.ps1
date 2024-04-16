@@ -34,7 +34,8 @@
     even if the author has been advised of the possibility of such damages.
 
     INSTALLATION:
-    Invoke-WebRequest -Uri https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/BuildMSSQL.ps1 -UseBasicParsing -OutFile BuildMSSQL.ps1; Invoke-Expression -Command BuildMSSQL.ps1 -UserMssql "RUBRIK\demo"
+    Invoke-WebRequest -Uri https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/BuildMSSQL.ps1 -UseBasicParsing -OutFile BuildMSSQL.ps1
+    .\BuildMSSQL.ps1 -UserMssql "RUBRIK\demo"
     
 .PARAMETER None
     This script does not accept any parameters.
