@@ -208,7 +208,7 @@ function Install-Ssms {
     try {
         # Test if the installer file already exists
         if (Test-Path -Path $Path\$Installer) {
-            Write-Host "SSMS installer already exists. Skipping download."
+            Log-Message $info "SSMS installer already exists. Skipping download."
         } else {
             $ProgressPreference = 'SilentlyContinue'
             Invoke-WebRequest $Url -OutFile "$Path\$Installer" -ErrorAction Stop
