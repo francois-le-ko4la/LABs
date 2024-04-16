@@ -352,12 +352,13 @@ function Add-FirewallRule {
 
 
 # MAIN
+Log-Message $info "Rubrik account defined: $UserMssql"
+Log-Message $info "MSSQL Version selected: $Release"
+
 if (Check-RebootRequired) {
     Log-Message $error "A computer restart is required. Please restart your computer and try again."
     exit 1
 }
-
-Log-Message $info "Rubrik account defined: $UserMssql"
 
 if (-not (Install-SqlServerExpress)) {
     Log-Message $error "Failed to install SQL Server Express 2019. Exiting script."
