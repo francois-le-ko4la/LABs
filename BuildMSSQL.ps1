@@ -34,7 +34,7 @@
     even if the author has been advised of the possibility of such damages.
 
     INSTALLATION:
-    Invoke-WebRequest -Uri https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/BuildMSSQL.ps1 -UseBasicParsing -OutFile BuildMSSQL.ps1; Invoke-Expression -Command BuildMSSQL.ps1
+    Invoke-WebRequest -Uri https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/BuildMSSQL.ps1 -UseBasicParsing -OutFile BuildMSSQL.ps1; Invoke-Expression -Command BuildMSSQL.ps1 -UserMssql "RUBRIK\demo"
     
 .PARAMETER None
     This script does not accept any parameters.
@@ -48,6 +48,10 @@
         PS C:\> .\BuildMSSQL.ps1
 
 #>
+
+param (
+    [string]$UserMssql = "RUBRIK\demo"
+)
 
 # Check if PowerShell version is compatible
 if ($PSVersionTable.PSVersion.Major -lt 5 -or ($PSVersionTable.PSVersion.Major -eq 5 -and $PSVersionTable.PSVersion.Minor -lt 1)) {
@@ -64,7 +68,6 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
 # Define variables
 $ServerInstance = "localhost\SQLEXPRESS"
 $DatabaseName = "AdventureWorks2019"
-$UserMssql = "RUBRIK\demo"
 $MssqlRoot = "C:\Program Files\Microsoft SQL Server\MSSQL15.SQLEXPRESS\MSSQL"
 $AdventureWorkUrl = "https://github.com/Microsoft/sql-server-samples/releases/download/adventureworks/AdventureWorksLT2019.bak"
 $MssqlUrl = "https://go.microsoft.com/fwlink/?linkid=866658"
@@ -334,6 +337,8 @@ if (Check-RebootRequired) {
     Log-Message $error "A computer restart is required. Please restart your computer and try again."
     exit 1
 }
+
+Log-Message $info "Rubrik account defined: $UserMssql"
 
 if (-not (Install-SqlServerExpress2019)) {
     Log-Message $error "Failed to install SQL Server Express 2019. Exiting script."
