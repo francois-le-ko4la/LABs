@@ -179,7 +179,7 @@ function Install-SqlServerExpress {
     try {
         # Test if the installer file already exists
         if (Test-Path -Path $Path\$Installer) {
-            Write-Host "SQL Server Express installer already exists. Skipping download."
+            Log-Message $info "SQL Server Express installer already exists. Skipping download."
         } else {
             $ProgressPreference = 'SilentlyContinue'
             Invoke-WebRequest $Url -OutFile "$Path\$Installer" -ErrorAction Stop
