@@ -1,15 +1,15 @@
 <#
 .SYNOPSIS
-    Script to automate the installation of SQL Server Express 2019, SQL Server Management Studio (SSMS),
-    and restore the AdventureWorks2019 database.
+    Script to automate the installation of SQL Server Express, SQL Server Management Studio (SSMS),
+    and restore the AdventureWorks2019/2022 database.
 
 .DESCRIPTION
-    This script automates the installation of SQL Server Express 2019 and SQL Server Management Studio (SSMS),
-    and restores the AdventureWorks2019 database for testing or development purposes only.
+    This script automates the installation of SQL Server Express and SQL Server Management Studio (SSMS),
+    and restores the AdventureWorks2019/2022 database for testing or development purposes only.
 
     Prerequisites:
     - Administrator privileges on the machine.
-    - Internet connection to download SQL Server Express 2019 and SSMS.
+    - Internet connection to download SQL Server Express and SSMS.
     - PowerShell 5.1 or later.
 
     DISCLAIMER:
@@ -166,7 +166,7 @@ function Check-SSMSInstalled {
 }
 
 
-# Function to install SQL Server Express 2019
+# Function to install SQL Server Express
 function Install-SqlServerExpress {
     if (Check-MSSQLInstalled) {
         Log-Message $info "Microsoft SQL Server is already installed on this system. No changes made."
@@ -179,7 +179,7 @@ function Install-SqlServerExpress {
     try {
         # Test if the installer file already exists
         if (Test-Path -Path $Path\$Installer) {
-            Write-Host "SQL Server Express 2019 installer already exists. Skipping download."
+            Write-Host "SQL Server Express installer already exists. Skipping download."
         } else {
             $ProgressPreference = 'SilentlyContinue'
             Invoke-WebRequest $Url -OutFile "$Path\$Installer" -ErrorAction Stop
@@ -188,7 +188,7 @@ function Install-SqlServerExpress {
         $InstallArgs = "/ACTION=INSTALL", "/IACCEPTSQLSERVERLICENSETERMS", "/QUIET"
         Start-Process -FilePath "$Path\$Installer" -ArgumentList $InstallArgs -Verb RunAs -Wait
     } catch {
-        Log-Message $error "Failed to download or install SQL Server Express 2019. Error: $_"
+        Log-Message $error "Failed to download or install SQL Server Express. Error: $_"
         return $false
     }
     return $true
@@ -361,12 +361,12 @@ if (Check-RebootRequired) {
 }
 
 if (-not (Install-SqlServerExpress)) {
-    Log-Message $error "Failed to install SQL Server Express 2019. Exiting script."
+    Log-Message $error "Failed to install SQL Server Express. Exiting script."
     exit 1
 }
 
 if (-not (Install-Ssms)) {
-    Log-Message $error "Failed to install SSMS 2019. Exiting script."
+    Log-Message $error "Failed to install SSMS. Exiting script."
     exit 1
 }
 
