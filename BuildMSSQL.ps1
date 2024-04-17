@@ -181,12 +181,36 @@ function Install-SqlServerExpress {
         if (Test-Path -Path $Path\$Installer) {
             Log-Message $info "SQL Server Express installer already exists. Skipping download."
         } else {
+            Log-Message $info "Downloading SQL Server Express 20$Release..."
             $ProgressPreference = 'SilentlyContinue'
             Invoke-WebRequest $Url -OutFile "$Path\$Installer" -ErrorAction Stop
         }
-        Log-Message $info "Installing SQL Server Express..."
-        $InstallArgs = "/ACTION=INSTALL", "/IACCEPTSQLSERVERLICENSETERMS", "/QUIET"
-        Start-Process -FilePath "$Path\$Installer" -ArgumentList $InstallArgs -Verb RunAs -Wait
+        Log-Message $info "Installing SQL Server Express. Please wait..."
+        # Create a new ProcessStartInfo object for the installation command
+        $installProcessInfo = New-Object System.Diagnostics.ProcessStartInfo
+        $installProcessInfo.FileName = "$Path\$Installer"
+        $installProcessInfo.Arguments = "/ACTION=INSTALL", "/IACCEPTSQLSERVERLICENSETERMS", "/QUIET"
+        $installProcessInfo.UseShellExecute = $false
+        $installProcessInfo.RedirectStandardError = $true
+        $installProcessInfo.RedirectStandardOutput = $true
+        $installProcessInfo.WindowStyle = "Hidden"
+        $installProcessInfo.CreateNoWindow = $true
+	
+        # Start the installation process
+        $installProcess = [System.Diagnostics.Process]::Start($installProcessInfo)
+	
+        # Wait for the installation process to exit
+        $installProcess.WaitForExit()
+
+        # Check the exit code to determine if the installation succeeded or failed
+        if ($installProcess.ExitCode -eq 0) {
+            Log-Message $info "SQL Server Express has been successfully installed."
+            return $true
+        } else {
+            $errorMessage = $installProcess.StandardError.ReadToEnd()
+            Log-Message $error "Failed to install SQL Server Express. Error: $errorMessage"
+            return $false
+        }
     } catch {
         Log-Message $error "Failed to download or install SQL Server Express. Error: $_"
         return $false
@@ -213,8 +237,9 @@ function Install-Ssms {
             $ProgressPreference = 'SilentlyContinue'
             Invoke-WebRequest $Url -OutFile "$Path\$Installer" -ErrorAction Stop
         }
-        Log-Message $info "Installing SSMS..."
+        Log-Message $info "Installing SSMS. Please wait..."
         Start-Process -FilePath "$Path\$Installer" -Args "/Install /Quiet /NorestartT" -Verb RunAs -Wait
+	Log-Message $info "SSMS has been successfully installed."
     } catch {
         Log-Message $error "Failed to download or install SSMS. Error: $_"
         return $false
