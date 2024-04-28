@@ -26,7 +26,7 @@
 # - python 3.6+
 #
 # USAGE:
-#  sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/ransim.sh | sudo sh
+#  curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/ransim.sh | sudo sh
 #
 # CRONTAB EXAMPLE:
 # 0 4 * * * /opt/rubrik/scripts/encrypt_file.py --delete-original encrypt /opt/rubrik/scripts/key /path/to/files
@@ -59,6 +59,12 @@ DOWN_CRYPTO=""
 log() {
     echo "$(date --iso-8601=seconds) - RANSIM - $1"
 }
+
+# Check the user
+if [ "$(id -u)" -ne 0 ]; then
+    log "Please run this script as root or using sudo!"
+    exit 1
+fi
 
 # Detect the OS and Version
 if [ "$(uname)" = "Linux" ]; then
