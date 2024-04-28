@@ -26,7 +26,7 @@
 # - ubuntu 20.04+
 #
 # SETUP:
-#  sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/MySQL.sh | sudo sh
+#  curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/MySQL.sh | sudo sh
 #
 # After running the script, you'll have:
 # - A MySQL database named "employees"
@@ -44,6 +44,12 @@ MYSQL_RUBRIK_PASS="Rubrik@123!"
 log() {
     echo "$(date --iso-8601=seconds) - MySQL - $1"
 }
+
+# Check the user
+if [ "$(id -u)" -ne 0 ]; then
+    log "Please run this script as root or using sudo!"
+    exit 1
+fi
 
 # Check if the platform is Linux
 if [ "$(uname)" != "Linux" ]; then
