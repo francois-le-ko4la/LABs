@@ -36,6 +36,12 @@ log() {
     echo "$(date --iso-8601=seconds) - GEN_FILE - $1"
 }
 
+# Check the user
+if [ "$(id -u)" -ne 0 ]; then
+    log "Please run this script as root or using sudo!"
+    exit 1
+fi
+
 log "Downloading lorem.txt..."
 wget -q https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/lorem.txt || { log "Failed to download lorem.txt. Exiting."; exit 1; }
 
