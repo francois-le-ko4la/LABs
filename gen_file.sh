@@ -25,7 +25,7 @@
 # - Linux platform: Debian 7+, Ubuntu 20/04+, RHEL 8+ or CentOS 9+
 #
 # SETUP:
-# sudo curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/gen_file.sh | sudo sh
+# curl https://raw.githubusercontent.com/francois-le-ko4la/LABs/main/gen_file.sh | sudo sh
 #
 
 DEST="/home/shares"
