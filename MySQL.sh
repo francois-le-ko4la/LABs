@@ -39,21 +39,25 @@ SCRIPT_PATH="/opt/rubrik/scripts/dump_mysql.sh"
 SLAMV_PATH="/mnt/rubrik_slamv"
 MYSQL_RUBRIK_USER="rubrik_svc"
 MYSQL_RUBRIK_PASS="Rubrik@123!"
+ERROR="ERROR"
+INFO="INFO"
 
 # Logging function
 log() {
-    echo "$(date --iso-8601=seconds) - MySQL - $1"
+    local SEV="$1"
+    local MSG="$2"
+    echo "$(date --iso-8601=seconds) - MySQL - $SEV - $MSG"
 }
 
 # Check the user
 if [ "$(id -u)" -ne 0 ]; then
-    log "Please run this script as root or using sudo!"
+    log "$ERROR" "Please run this script as root or using sudo!"
     exit 1
 fi
 
 # Check if the platform is Linux
 if [ "$(uname)" != "Linux" ]; then
-    log "This script only works on Linux systems."
+    log "$ERROR" "This script only works on Linux systems."
     exit 1
 fi
 
@@ -61,45 +65,45 @@ fi
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     if [ "$ID" = "ubuntu" ] && [ "${VERSION_ID%.*}" -ge 20 ]; then
-        log "Ubuntu 20.04 or newer detected."
+        log "$INFO" "Ubuntu 20.04 or newer detected."
     else
-        log "Unsupported Ubuntu version. Exiting..."
+        log "$ERROR" "Unsupported Ubuntu version. Exiting..."
         exit 1
     fi
 else
-    log "Unable to detect the operating system."
+    log "$ERROR" "Unable to detect the operating system."
     exit 1
 fi
 
-if dpkg -l | grep -q mariadb-server; then
-    log "MariaDB is installed. Exiting."
+if dpkg -l | egrep '^ii.*mariadb-server'; then
+    log "$ERROR" "MariaDB is installed. Exiting."
     exit 1
 fi
 
-log "Install MySQL package..."
-apt install -y git wget nfs-common mysql-server > /dev/null 2>&1 || { log "Failed to install MySQL package. Exiting."; exit 1; }
+log "$INFO" "Install MySQL package..."
+apt install -y git wget nfs-common mysql-server > /dev/null 2>&1 || { log "$ERROR" "Failed to install MySQL package. Exiting."; exit 1; }
 
-log "Enable/start service..."
-systemctl enable mysql.service > /dev/null 2>&1
-systemctl start mysql.service > /dev/null 2>&1
+log "$INFO" "Enable/start service..."
+systemctl enable mysql.service > /dev/null 2>&1 || { log "$ERROR" "Failed to enable MySQL service. Exiting."; exit 1; }
+systemctl start mysql.service > /dev/null 2>&1 || { log "$ERROR" "Failed to start MySQL service. Exiting."; exit 1; }
 
-log "Download test database..."
-git clone https://github.com/datacharmer/test_db.git > /dev/null 2>&1 || { log "Failed to download test database. Exiting."; exit 1; }
+log "$INFO" "Download test database..."
+git clone https://github.com/datacharmer/test_db.git > /dev/null 2>&1 || { log "$ERROR" "Failed to download test database. Exiting."; exit 1; }
 
-log "Import test database..."
+log "$INFO" "Import test database..."
 cd test_db
-mysql < employees.sql > /dev/null 2>&1 || { log "Failed to import test database. Exiting."; exit 1; }
+mysql < employees.sql > /dev/null 2>&1 || { log "$ERROR" "Failed to import test database. Exiting."; exit 1; }
 
-log "Define backup account..."
+log "$INFO" "Define backup account..."
 cat << EOF > adduser.sql
 CREATE USER '$MYSQL_RUBRIK_USER'@'localhost' IDENTIFIED BY '$MYSQL_RUBRIK_PASS';
 GRANT ALL PRIVILEGES ON *.* TO '$MYSQL_RUBRIK_USER'@'localhost' WITH GRANT OPTION;
 EOF
 
-sudo mysql < adduser.sql 2>&1 || { log "Failed to import test database. Exiting."; exit 1; }
+sudo mysql < adduser.sql 2>&1 || { log "$ERROR" "Failed to import test database. Exiting."; exit 1; }
 
-log "Add dump script"
-mkdir -p $SCRIPT_DIR
+log "$INFO" "Add dump script"
+mkdir -p $SCRIPT_DIR || { log "$ERROR" "Failed to create scripts directory. Exiting."; exit 1; }
 cat << EOF > $SCRIPT_PATH
 #!/bin/sh
 
@@ -113,28 +117,36 @@ cat << EOF > $SCRIPT_PATH
 # The author of this script cannot be held responsible for any potential damages or
 # losses resulting from its use.
 
-dotd=\$(date +"%Y_%m_%d_%H_%M_%S")
-user_name="$MYSQL_RUBRIK_USER"
-password="$MYSQL_RUBRIK_PASS"
-db_name="employees"
-backup_dir="$SLAMV_PATH"
 
+DOTD=\$(date +"%Y_%m_%d_%H_%M_%S")
+USERNAME="$MYSQL_RUBRIK_USER"
+PASSWORD="$MYSQL_RUBRIK_PASS"
+DB_NAME="employees"
+BACKUP_DIR="$SLAMV_PATH"
+
+ERROR="ERROR"
+INFO="INFO"
+
+# Logging function
 log() {
-    echo "\$(date --iso-8601=seconds) - MySQLDump - \$1"
+    local SEV="\$1"
+    local MSG="\$2"
+    echo "\$(date --iso-8601=seconds) - MySQLDump - \$SEV - \$MSG"
 }
 
-log "Starting Mysqldump..."
+log "\$INFO" "Starting MySQL dump..."
 
-if mysqldump -u "\$user_name" --password="\$password" "\$db_name" > "\$backup_dir/\$db_name-\$dotd.sql"; then
-    log "Mysqldump database finished successfully!"
+if mysqldump -u "\$USERNAME" --password="\$PASSWORD" "\$DB_NAME" > "\$BACKUP_DIR/\$DB_NAME-\$DOTD.sql" > /dev/null 2>&1; then
+    log "\$INFO" "MySQL dump finished successfully!"
 else
-    log "Mysqldump failed, check logs for details..."
+    log "\$ERROR" "MySQL dump failed, check logs for details..."
     exit 1
 fi
 
-log "Mysql dump cleanup"
+log "\$INFO" "MySQL dump cleanup in progress..."
 # Supprime les fichiers plus anciens de 3 jours dans le répertoire de sauvegarde
-find "\$backup_dir" -type f -name "\$db_name-*.sql" -mtime +3 -exec rm {} \;
+find "\$BACKUP_DIR" -type f -name "\$DB_NAME-*.sql" -mtime +3 -exec rm {} \;
+log "\$INFO" "MySQL dump cleanup finished successfully!"
 
 exit 0
 EOF
