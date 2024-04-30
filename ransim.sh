@@ -61,7 +61,7 @@ INFO="INFO"
 log() {
     local SEV="$1"
     local MSG="$2"
-    echo "$(date --iso-8601=seconds) - MySQL - $SEV - $MSG"
+    echo "$(date --iso-8601=seconds) - RANSIM - $SEV - $MSG"
 }
 
 # Check the user
