@@ -54,15 +54,19 @@ RBK_PATH="/opt/rubrik/scripts"
 URL="https://raw.githubusercontent.com/francois-le-ko4la/LABs/main"
 INST_PYTHON=0
 DOWN_CRYPTO=""
+ERROR="ERROR"
+INFO="INFO"
 
 # Logging function
 log() {
-    echo "$(date --iso-8601=seconds) - RANSIM - $1"
+    local SEV="$1"
+    local MSG="$2"
+    echo "$(date --iso-8601=seconds) - MySQL - $SEV - $MSG"
 }
 
 # Check the user
 if [ "$(id -u)" -ne 0 ]; then
-    log "Please run this script as root or using sudo!"
+    log "$ERROR" "Please run this script as root or using sudo!"
     exit 1
 fi
 
@@ -72,45 +76,45 @@ if [ "$(uname)" = "Linux" ]; then
         . /etc/os-release
         if { [ "$ID" = "ubuntu" ] && [ "${VERSION_ID%.*}" -ge 20 ]; } || \
            { [ "$ID" = "debian" ] && [ "$VERSION_ID" -ge 11 ]; }; then
-            log "Debian/Ubuntu detected."
+            log "$INFO" "Debian/Ubuntu detected."
             INST_PYTHON=1
         elif { [ "$ID" = "centos" ] && [ "$VERSION_ID" -ge 9 ]; } || \
              { [ "$ID" = "rhel" ] && [ "$VERSION_ID" -ge 8 ]; }; then
-            log "CENTOS/RHEL detected."
+            log "$INFO" "CENTOS/RHEL detected."
             INST_PYTHON=2
         elif [ "$ID" = "centos" ] && [ "$VERSION_ID" -ge 7 ]; then
-            log "CENTOS detected. Downgrade cryptography."
+            log "$INFO" "CENTOS detected. Downgrade cryptography."
             INST_PYTHON=2
             DOWN_CRYPTO="==36.0.2"
         else
-            log "Unsupported platform. Exiting..."
+            log "$ERROR" "Unsupported platform. Exiting..."
             exit 1
         fi
     else
-        log "Unable to detect the operating system."
+        log "$ERROR" "Unable to detect the operating system."
         exit 1
     fi
 else
-    log "This script only works on Linux systems."
+    log "$ERROR" "This script only works on Linux systems."
     exit 1
 fi
 
-log "Installing python3-full..."
+log "$INFO" "Installing python3-full..."
 if [ "$INST_PYTHON" -eq 1 ]; then
-    apt-get -yq install python3-full > /dev/null 2>&1 || { log "Installation of python3-full failed."; exit 1; }
+    apt-get -yq install python3-full > /dev/null 2>&1 || { log "$ERROR" "Installation of python3-full failed."; exit 1; }
 elif [ "$INST_PYTHON" -eq 2 ]; then
-    yum install -y python3 > /dev/null 2>&1 || { log "Installation of python3 failed."; exit 1; }
+    yum install -y python3 > /dev/null 2>&1 || { log "$ERROR" "Installation of python3 failed."; exit 1; }
 fi
 
-log "Creating scripts repository..."
-mkdir -p $RBK_PATH
-log "Creating python venv..."
-python3 -m venv $RBK_PATH/venv > /dev/null 2>&1 || { log "Creation of python venv failed."; exit 1; }
-log "Installing cryptography lib..."
+log "$INFO" "Creating scripts folder..."
+mkdir -p $RBK_PATH > /dev/null 2>&1 || { log "$ERROR" "Failed to create scripts folder."; exit 1; }
+log "$INFO" "Creating python venv..."
+python3 -m venv $RBK_PATH/venv > /dev/null 2>&1 || { log "$ERROR" "Creation of python venv failed."; exit 1; }
+log "$INFO" "Installing cryptography lib..."
 $RBK_PATH/venv/bin/python -m pip install --upgrade pip > /dev/null 2>&1
-$RBK_PATH/venv/bin/python -m pip install cryptography$DOWN_CRYPTO > /dev/null 2>&1 || { log "Installation of cryptography library failed."; exit 1; }
-log "Downloading crypto script..."
-wget -q -O $RBK_PATH/encrypt_file.py $URL/encrypt_file.py > /dev/null 2>&1 || { log "Download of encrypt_file.py failed."; exit 1; }
-wget -q -O $RBK_PATH/key $URL/key > /dev/null 2>&1 || { log "Download of key failed."; exit 1; }
+$RBK_PATH/venv/bin/python -m pip install cryptography$DOWN_CRYPTO > /dev/null 2>&1 || { log "$ERROR" "Installation of cryptography library failed."; exit 1; }
+log "$INFO" "Downloading crypto script..."
+wget -q -O $RBK_PATH/encrypt_file.py $URL/encrypt_file.py > /dev/null 2>&1 || { log "$ERROR" "Download of encrypt_file.py failed."; exit 1; }
+wget -q -O $RBK_PATH/key $URL/key > /dev/null 2>&1 || { log "$ERROR" "Download of key failed."; exit 1; }
 chmod 754 $RBK_PATH/encrypt_file.py > /dev/null 2>&1
-log "Operation completed successfully."
+log "$INFO" "Operation completed successfully."
