@@ -152,3 +152,4 @@ exit 0
 EOF
 
 chmod 764 $SCRIPT_PATH
+log "$INFO" "Operation completed successfully."
