@@ -65,7 +65,7 @@ log() {
 }
 
 # Check the user
-if [ "$(id -u)" -ne 0 ]; then
+if [ "${EUID:-0}" -ne 0 ] || [ "$(id -u)" -ne 0 ]; then
     log "$ERROR" "Please run this script as root or using sudo!"
     exit 1
 fi
