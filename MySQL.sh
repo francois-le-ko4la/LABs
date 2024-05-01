@@ -75,7 +75,7 @@ else
     exit 1
 fi
 
-if dpkg -l | egrep '^ii.*mariadb-server'; then
+if [ "$(dpkg-query -W -f='${Status}' mariadb-server /dev/null 2>&1)" = "install ok installed" ]; then
     log "$ERROR" "MariaDB is installed. Exiting."
     exit 1
 fi
