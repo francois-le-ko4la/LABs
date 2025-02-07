@@ -47,7 +47,7 @@ get_token() {
     local secret="$3"
 
     local response
-    response=$(curl -ks -X POST "https://$cluster_address/api/v1/service_account/session" -d '{
+    response=$(curl -ks -X POST "https://$cluster_address/api/v1/service_account/session" -H 'accept: application/json' -H 'Content-Type: application/json' -d '{
       "serviceAccountId": "'"$account_id"'",
       "secret": "'"$secret"'",
       "organizationId": "",
@@ -68,7 +68,7 @@ get_token_from_file() {
 
 # Function to execute an API request with the token
 my_curl() {
-    curl -X "$1" "$2" -H "accept: application/json" -H "Authorization: Bearer $TOKEN" -k
+    curl -X "$1" "$2" -H 'accept: application/json' -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -k
 }
 
 #######################################################################################################################################
